@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
@@ -8,7 +7,7 @@ export default function Home() {
       <p className="text-sm text-muted-foreground">
         Brought to you by{' '}
         <Link
-          href="https://justobii.com"
+          href="https://www.justobii.com/"
           target="_blank"
           rel="noopener noreferrer"
           className="animate-pulse underline underline-offset-2"
