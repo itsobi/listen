@@ -7,19 +7,21 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import type { NavItem } from './types';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export function SidebarNavMain({ items }: { items: NavItem[] }) {
   const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          const Icon = item.icon;
-
+          const isActive = pathname === item.url;
           return (
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
+                isActive={isActive}
                 tooltip={item.title}
                 onClick={() => {
                   if (item.url) {
@@ -27,7 +29,7 @@ export function SidebarNavMain({ items }: { items: NavItem[] }) {
                   }
                 }}
               >
-                {Icon && <Icon className="mr-2 h-4 w-4" />}
+                {item.icon}
                 <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

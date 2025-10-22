@@ -1,9 +1,9 @@
-import type { ElementType } from "react";
+import type { ElementType } from 'react';
 
 export interface NavItem {
   id: string;
   title: string;
-  icon: ElementType;
+  icon: string;
   url?: string;
   isActive?: boolean;
 }

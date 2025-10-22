@@ -66,7 +66,13 @@ export function LandingPageView() {
           </p>
 
           <Link href="/sign-up">
-            <Button className="mt-6">Get Started</Button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.1 }}
+              className="font-semibold py-2 px-4 rounded-md shadow-sm bg-primary text-primary-foreground mt-6 cursor-pointer"
+            >
+              Get Started
+            </motion.button>
           </Link>
 
           <CustomVideoPlayer

@@ -19,9 +19,9 @@ export function Navbar() {
     >
       <AppLogo />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <Link href="/sign-in">
-          <Button variant="outline">Login</Button>
+          <Button variant="link">Login</Button>
         </Link>
 
         <ThemeToggle />

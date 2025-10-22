@@ -4,6 +4,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CustomSlider } from '@/components/landing-page/slider';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Play, Pause, Volume2, Volume1, VolumeX } from 'lucide-react';
 import { useRef, useState } from 'react';
 
@@ -22,6 +23,7 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [showControls, setShowControls] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00';
@@ -91,10 +93,17 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
+      {!isVideoReady && (
+        <div className="w-full aspect-video flex items-center justify-center">
+          <Skeleton className="w-full h-full" />
+        </div>
+      )}
+
       <video
         ref={videoRef}
-        className="w-full"
+        className={cn('w-full', !isVideoReady && 'hidden')}
         onTimeUpdate={handleTimeUpdate}
+        onLoadedData={() => setIsVideoReady(true)}
         src={src}
         onClick={togglePlay}
       />

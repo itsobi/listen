@@ -69,7 +69,7 @@ export function SidebarNavHeader({ data }: SidebarNavHeaderProps) {
                   setOpen(false);
                 }}
               >
-                <item.icon className="mr-2 h-4 w-4" />
+                {item.icon}
                 <span>{item.title}</span>
               </CommandItem>
             ))}

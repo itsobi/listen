@@ -1,3 +1,9 @@
+import { PageHeading } from '@/components/global/page-heading';
+
 export default function DashboardPage() {
-  return <div>DashboardPage</div>;
+  return (
+    <>
+      <PageHeading title="Dashboard" />
+    </>
+  );
 }

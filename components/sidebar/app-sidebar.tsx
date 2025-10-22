@@ -1,12 +1,7 @@
 'use client';
 
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
-import {
-  IconAd2,
-  IconListDetails,
-  IconNews,
-  IconSettingsCode,
-} from '@tabler/icons-react';
+import { IconAd2, IconNews, IconSettingsCode } from '@tabler/icons-react';
 import { LayoutDashboard, List, Package, Pointer } from 'lucide-react';
 import { SidebarNavCollapsible } from '@/components/sidebar/sidebar-nav-collapsible';
 import { SidebarNavFooter } from '@/components/sidebar/sidebar-nav-footer';
@@ -25,19 +20,19 @@ const data: SidebarData = {
       id: 'home',
       title: 'Home',
       url: '/dashboard',
-      icon: LayoutDashboard,
+      icon: '🏠',
     },
     {
       id: 'onboard',
       title: 'Onboard',
       url: '/onboard',
-      icon: Pointer,
+      icon: '✅',
     },
     {
       id: 'episodes',
       title: 'Episodes',
       url: '/episodes',
-      icon: List,
+      icon: '📋',
     },
   ],
   navCollapsible: {

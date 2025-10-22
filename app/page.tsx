@@ -3,9 +3,9 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 export default async function Home() {
-  const { userId } = await auth();
+  const { isAuthenticated } = await auth();
 
-  if (userId) {
+  if (isAuthenticated) {
     return redirect('/dashboard');
   }
   return <LandingPageView />;
