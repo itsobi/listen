@@ -6,7 +6,7 @@ export default async function Home() {
   const { isAuthenticated } = await auth();
 
   if (isAuthenticated) {
-    return redirect('/dashboard');
+    return redirect('/home');
   }
   return <LandingPageView />;
 }

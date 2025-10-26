@@ -63,12 +63,12 @@ export function SignUpForm({ verifying, setVerifying }: Props) {
       signIn.authenticateWithRedirect({
         strategy,
         redirectUrl: '/sign-up/sso-callback',
-        redirectUrlComplete: '/dashboard',
+        redirectUrlComplete: '/home',
       }),
       {
         loading: 'Signing up with Google...',
         success:
-          'Signed up with Google successfully. Redirecting to dashboard...',
+          'Signed up with Google successfully. Redirecting to the home screen...',
         error: (error) => {
           if (isClerkAPIResponseError(error)) setErrors(error.errors);
           return (

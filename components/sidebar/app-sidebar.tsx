@@ -10,23 +10,18 @@ import { SidebarNavMain } from '@/components/sidebar/sidebar-nav-main';
 import type { SidebarData } from '@/components/sidebar/types';
 
 const data: SidebarData = {
-  user: {
-    name: 'ephraim',
-    email: 'ephraim@blocks.so',
-    avatar: '/avatar-01.png',
-  },
   navMain: [
     {
       id: 'home',
       title: 'Home',
-      url: '/dashboard',
+      url: '/home',
       icon: '🏠',
     },
     {
-      id: 'onboard',
-      title: 'Onboard',
-      url: '/onboard',
-      icon: '✅',
+      id: 'preferences',
+      title: 'Preferences',
+      url: '/preferences',
+      icon: '⚙️',
     },
     {
       id: 'episodes',

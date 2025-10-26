@@ -8,12 +8,6 @@ export interface NavItem {
   isActive?: boolean;
 }
 
-export interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
-
 export interface FavoriteItem {
   id: string;
   title: string;
@@ -34,7 +28,6 @@ export interface TopicItem {
 }
 
 export interface SidebarData {
-  user: User;
   navMain: NavItem[];
   navCollapsible: {
     favorites: FavoriteItem[];

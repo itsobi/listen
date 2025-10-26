@@ -1,3 +1,4 @@
+import { ConvexClientProvider } from '@/components/providers/convex-client-provider';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import {
@@ -18,11 +19,13 @@ export default function ProtectedLayout({
         <main>
           <div className="flex items-center justify-between p-4">
             <SidebarTrigger className="md:hidden" />
-            <div className="md:block" /> {/* space for theme toggle */}
+            <div className="md:block" />
             <ThemeToggle />
           </div>
 
-          <div className="px-4 max-w-7xl mx-auto">{children}</div>
+          <div className="max-w-7xl mx-auto px-8 pb-8">
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

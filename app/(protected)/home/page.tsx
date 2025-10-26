@@ -1,9 +1,9 @@
 import { PageHeading } from '@/components/global/page-heading';
 
-export default function DashboardPage() {
+export default function HomePage() {
   return (
     <>
-      <PageHeading title="Dashboard" />
+      <PageHeading title="Home" />
     </>
   );
 }

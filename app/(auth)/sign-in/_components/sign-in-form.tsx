@@ -84,12 +84,12 @@ export default function SignInForm({ verifying, setVerifying }: Props) {
       signIn.authenticateWithRedirect({
         strategy,
         redirectUrl: '/sign-in/sso-callback',
-        redirectUrlComplete: '/dashboard',
+        redirectUrlComplete: '/home',
       }),
       {
         loading: 'Signing in with Google...',
         success:
-          'Signed in successfully. We are redirecting you to the dashboard...',
+          'Signed in successfully. We are redirecting you to the home screen...',
         error: (error) => {
           if (isClerkAPIResponseError(error)) setErrors(error.errors);
           return error instanceof Error

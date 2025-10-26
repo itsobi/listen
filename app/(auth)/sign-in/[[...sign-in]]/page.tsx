@@ -12,7 +12,7 @@ export default function SignInPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isSignedIn) router.push('/dashboard');
+    if (isSignedIn) router.push('/home');
   }, [isSignedIn, router]);
 
   if (verifying) {

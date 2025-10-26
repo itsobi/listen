@@ -45,12 +45,12 @@ export function SignUpVerifyForm({ verifying, setVerifying }: Props) {
         await setActive({
           session: signUpAttempt.createdSessionId,
           navigate: async () => {
-            router.push('/dashboard');
+            router.push('/home');
             setVerifying(false);
           },
         });
         toast.success(
-          'Account created successfully! Redirecting to dashboard...'
+          'Account created successfully! Redirecting to the home screen...'
         );
       } else {
         console.error('Sign-up attempt not complete:', signUpAttempt);
