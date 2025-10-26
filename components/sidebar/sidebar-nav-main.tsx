@@ -5,11 +5,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import type { NavItem } from './types';
 import { usePathname, useRouter } from 'next/navigation';
 
 export function SidebarNavMain({ items }: { items: NavItem[] }) {
+  const { open: sidebarIsOpen, isMobile, toggleSidebar } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -26,6 +28,9 @@ export function SidebarNavMain({ items }: { items: NavItem[] }) {
                 onClick={() => {
                   if (item.url) {
                     router.push(item.url);
+                    if (isMobile && sidebarIsOpen) {
+                      toggleSidebar();
+                    }
                   }
                 }}
               >

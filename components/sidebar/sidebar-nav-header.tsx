@@ -1,6 +1,5 @@
 'use client';
 
-import { Search } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -43,7 +42,7 @@ export function SidebarNavHeader({ data }: SidebarNavHeaderProps) {
           onClick={() => setOpen(true)}
         >
           <div className="flex items-center flex-1 gap-3">
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <span>🔍</span>
             <span className="text-sm text-muted-foreground font-normal">
               Search
             </span>
