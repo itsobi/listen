@@ -13,21 +13,21 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <main>
-          <div className="flex items-center justify-between p-4">
-            <SidebarTrigger className="md:hidden" />
-            <div className="md:block" />
-            <ThemeToggle />
-          </div>
+    <ConvexClientProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <main>
+            <div className="flex items-center justify-between p-4">
+              <SidebarTrigger className="md:hidden" />
+              <div className="md:block" />
+              <ThemeToggle />
+            </div>
 
-          <div className="max-w-7xl mx-auto px-8 pb-8">
-            <ConvexClientProvider>{children}</ConvexClientProvider>
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+            <div className="max-w-7xl mx-auto px-8 pb-8">{children}</div>
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </ConvexClientProvider>
   );
 }

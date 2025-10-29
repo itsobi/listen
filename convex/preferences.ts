@@ -9,6 +9,7 @@ export const createPreference = mutation({
         name: v.string(),
         artistName: v.string(),
         image: v.optional(v.string()),
+        color: v.string(),
       })
     ),
   },
@@ -42,7 +43,7 @@ export const getPreferences = query({
   handler: async (ctx) => {
     const user = await ctx.auth.getUserIdentity();
 
-    if (!user) throw new Error('Unauthorized');
+    if (!user) return null;
 
     return await ctx.db
       .query('preferences')
@@ -61,6 +62,7 @@ export const updatePreferences = mutation({
           name: v.string(),
           artistName: v.string(),
           image: v.optional(v.string()),
+          color: v.string(),
         })
       )
     ),

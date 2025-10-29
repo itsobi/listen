@@ -1,125 +1,37 @@
 'use client';
 
-import * as React from 'react';
-
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command';
 import { SidebarHeader } from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
-import { useEffect } from 'react';
-import { SidebarData } from '@/components/sidebar/types';
+import { Bell } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import Link from 'next/link';
 
-interface SidebarNavHeaderProps {
-  data: SidebarData;
-}
-
-export function SidebarNavHeader({ data }: SidebarNavHeaderProps) {
-  const [open, setOpen] = React.useState(false);
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
-
+export function SidebarNavHeader() {
   return (
     <>
       <SidebarHeader>
-        <div
-          className="flex items-center justify-between px-2 pb-0 pt-3 cursor-pointer"
-          onClick={() => setOpen(true)}
-        >
-          <div className="flex items-center flex-1 gap-3">
-            <span>🔍</span>
-            <span className="text-sm text-muted-foreground font-normal">
-              Search
-            </span>
-          </div>
-          <div className="flex items-center justify-center px-2 py-1 border border-border rounded-md">
-            <kbd className="text-muted-foreground inline-flex font-[inherit] text-xs font-medium">
-              <span className="opacity-70">⌘K</span>
-            </kbd>
-          </div>
+        <div className="flex items-center justify-between px-2 pb-0 pt-3">
+          <Link
+            href="/"
+            className="italic font-thin tracking-wide text-primary"
+          >
+            Listen
+          </Link>
+          <Popover>
+            <PopoverTrigger asChild className="cursor-pointer">
+              <Bell className="size-4 hover:text-primary" />
+            </PopoverTrigger>
+            <PopoverContent className="w-48">
+              <div className="flex flex-col gap-2">
+                <p>Notifications</p>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </SidebarHeader>
-
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search everything..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Navigation">
-            {data.navMain.map((item) => (
-              <CommandItem
-                className="py-2!"
-                key={item.id}
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                {item.icon}
-                <span>{item.title}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandSeparator className="my-2" />
-          <CommandGroup heading="Favorites">
-            {data.navCollapsible.favorites.map((item) => (
-              <CommandItem
-                className="py-2!"
-                key={item.id}
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                <div className={cn('mr-2 h-3 w-3 rounded-full', item.color)} />
-                <span>{item.title}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandSeparator className="my-2" />
-          <CommandGroup heading="Teams">
-            {data.navCollapsible.teams.map((item) => (
-              <CommandItem
-                className="py-2!"
-                key={item.id}
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                <span>{item.title}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandSeparator className="my-2" />
-          <CommandGroup heading="Topics">
-            {data.navCollapsible.topics.map((item) => (
-              <CommandItem
-                className="py-2!"
-                key={item.id}
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                <span>{item.title}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
     </>
   );
 }

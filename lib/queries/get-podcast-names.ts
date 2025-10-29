@@ -1,5 +1,3 @@
-'use server';
-
 export async function getPodcastNames(podcasts: string[]) {
   try {
     const podcastData = await Promise.all(

@@ -36,7 +36,7 @@ export function AnimatedHeader() {
       ))}
       &nbsp;
       <motion.span
-        className="text-primary animate-pulse"
+        className="italic font-thin tracking-wide text-primary animate-pulse"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: text.length * 0.05 + 0.3 }}

@@ -6,8 +6,8 @@ import { ThemeToggle } from '../theme/theme-toggle';
 
 export function AppLogo() {
   return (
-    <Link href="/" className="dark:border-none rounded bg-[#0f172a] p-1">
-      <Ear className="text-primary" />
+    <Link href="/" className="italic font-thin tracking-wide text-primary">
+      Listen
     </Link>
   );
 }

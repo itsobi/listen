@@ -10,6 +10,7 @@ export default defineSchema({
         name: v.string(),
         artistName: v.string(),
         image: v.optional(v.string()),
+        color: v.string(),
       })
     ),
   }).index('by_user_id', ['user_id']),

@@ -58,6 +58,8 @@ export function VerifyPodcastDialog({
           setPodcasts([]);
         } else {
           toast.error(result.message || 'Failed to update preferences');
+          setIsPending(false);
+          return;
         }
       } else {
         // Create new preferences
@@ -74,6 +76,8 @@ export function VerifyPodcastDialog({
           setPodcasts([]);
         } else {
           toast.error(result.message || 'Failed to create preferences');
+          setIsPending(false);
+          return;
         }
       }
     } catch (error) {

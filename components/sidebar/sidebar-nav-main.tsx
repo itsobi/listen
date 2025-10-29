@@ -7,10 +7,26 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import type { NavItem } from './types';
 import { usePathname, useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { HomeIcon, ListIcon, SettingsIcon } from 'lucide-react';
 
-export function SidebarNavMain({ items }: { items: NavItem[] }) {
+const navMain = [
+  {
+    id: 'home',
+    title: 'Home',
+    url: '/home',
+    icon: HomeIcon,
+  },
+  {
+    id: 'preferences',
+    title: 'Preferences',
+    url: '/preferences',
+    icon: SettingsIcon,
+  },
+];
+
+export function SidebarNavMain() {
   const { open: sidebarIsOpen, isMobile, toggleSidebar } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
@@ -18,8 +34,9 @@ export function SidebarNavMain({ items }: { items: NavItem[] }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => {
+        {navMain.map((item) => {
           const isActive = pathname === item.url;
+          const Icon = item.icon;
           return (
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
@@ -34,8 +51,12 @@ export function SidebarNavMain({ items }: { items: NavItem[] }) {
                   }
                 }}
               >
-                {item.icon}
-                <span>{item.title}</span>
+                <Icon
+                  className={cn('mr-2 size-4', isActive && 'dark:text-primary')}
+                />
+                <span className={cn(isActive && 'dark:text-primary')}>
+                  {item.title}
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

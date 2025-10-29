@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export type Podcast = {
   name: string;
   artistName: string;
+  color: string;
   image?: string;
 };
 

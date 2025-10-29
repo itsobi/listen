@@ -29,9 +29,9 @@ import {
 import { Loader, SendHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { getPodcastNames } from '@/lib/get-podcast-names';
+import { getPodcastNames } from '@/lib/queries/get-podcast-names';
 import { VerifyPodcastDialog } from './verify-podcasts-dialog';
-import { cn } from '@/lib/utils';
+import { cn, generateRandomColor } from '@/lib/utils';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LoadingScreen } from '@/components/global/loading-screen';
@@ -68,11 +68,11 @@ export function PreferencesForm() {
   const [currentPodcast, setCurrentPodcast] = useState<string>('');
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { podcasts, setPodcasts } = usePreferencesStore();
+  const { setPodcasts } = usePreferencesStore();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    mode: 'all', // Validate on blur, change, and submit
+    mode: 'onChange', // Changed from 'all' to avoid initial validation with empty values
     defaultValues: {
       providers: preferences?.providers || [],
       podcasts: preferences?.podcasts.map((podcast) => podcast.name) || [],
@@ -90,9 +90,13 @@ export function PreferencesForm() {
         podcasts: podcastNames,
       });
     }
+    // Trigger validation when form initializes to get correct validation state
+    if (preferences !== undefined) {
+      form.trigger();
+    }
   }, [preferences, form]);
 
-  const addPodcast = (fieldOnChange: (value: string[]) => void) => {
+  const addPodcast = () => {
     const currentPodcasts = form.getValues('podcasts') || [];
     if (currentPodcasts.length >= 5) {
       toast.error('You can only add up to 5 podcasts.');
@@ -103,29 +107,29 @@ export function PreferencesForm() {
       !currentPodcasts.includes(currentPodcast.trim())
     ) {
       const updatedPodcasts = [...currentPodcasts, currentPodcast.trim()];
-      fieldOnChange(updatedPodcasts);
+      form.setValue('podcasts', updatedPodcasts, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       setCurrentPodcast('');
     }
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    fieldOnChange: (value: string[]) => void
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addPodcast(fieldOnChange);
+      addPodcast();
     }
   };
 
-  const removePodcast = (
-    podcast: string,
-    fieldOnChange: (value: string[]) => void
-  ) => {
+  const removePodcast = (podcast: string) => {
     const currentPodcasts = form.getValues('podcasts') || [];
     if (currentPodcasts.includes(podcast)) {
       const updatedPodcasts = currentPodcasts.filter((p) => p !== podcast);
-      fieldOnChange(updatedPodcasts);
+      form.setValue('podcasts', updatedPodcasts, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
   };
 
@@ -157,6 +161,7 @@ export function PreferencesForm() {
                 name: podcast.name,
                 artistName: podcast.artistName,
                 image: podcast.image ?? undefined,
+                color: generateRandomColor(),
               }));
 
             if (validPodcasts.length === 0) {
@@ -260,18 +265,16 @@ export function PreferencesForm() {
                                 : false
                             }
                             onCheckedChange={(checked) => {
-                              if (checked) {
-                                field.onChange([
-                                  ...(field.value || []),
-                                  provider.value,
-                                ]);
-                              } else {
-                                field.onChange(
-                                  field.value?.filter(
+                              const updatedProviders = checked
+                                ? [...(field.value || []), provider.value]
+                                : field.value?.filter(
                                     (value) => value !== provider.value
-                                  )
-                                );
-                              }
+                                  ) || [];
+
+                              form.setValue('providers', updatedProviders, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
                             }}
                             className="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white "
                           />
@@ -313,7 +316,7 @@ export function PreferencesForm() {
                         placeholder="The Obi One Podcast"
                         value={currentPodcast}
                         onChange={(e) => setCurrentPodcast(e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(e, field.onChange)}
+                        onKeyDown={handleKeyDown}
                         className={
                           fieldState.invalid ? 'border-destructive' : ''
                         }
@@ -321,7 +324,7 @@ export function PreferencesForm() {
                       <InputGroupAddon align="inline-end">
                         <InputGroupButton
                           variant="ghost"
-                          onClick={() => addPodcast(field.onChange)}
+                          onClick={addPodcast}
                           disabled={!currentPodcast.trim()}
                         >
                           <SendHorizontal
@@ -342,9 +345,7 @@ export function PreferencesForm() {
                             <span>{podcast}</span>
                             <button
                               type="button"
-                              onClick={() =>
-                                removePodcast(podcast, field.onChange)
-                              }
+                              onClick={() => removePodcast(podcast)}
                               className="cursor-pointer text-destructive hover:text-destructive/40"
                             >
                               <X className="size-4" />

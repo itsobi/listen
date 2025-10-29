@@ -3,12 +3,12 @@ import type { ElementType } from 'react';
 export interface NavItem {
   id: string;
   title: string;
-  icon: string;
+  icon: ElementType;
   url?: string;
   isActive?: boolean;
 }
 
-export interface FavoriteItem {
+export interface PodcastItem {
   id: string;
   title: string;
   href: string;
@@ -29,9 +29,4 @@ export interface TopicItem {
 
 export interface SidebarData {
   navMain: NavItem[];
-  navCollapsible: {
-    favorites: FavoriteItem[];
-    teams: TeamItem[];
-    topics: TopicItem[];
-  };
 }
