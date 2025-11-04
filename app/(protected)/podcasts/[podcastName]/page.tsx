@@ -16,7 +16,6 @@ export default async function PodcastNamePage({
   const { podcastName } = await params;
   const { provider } = await searchParams;
 
-  console.log('search params', provider);
   const podName = decodeURIComponent(podcastName);
 
   if (provider === 'apple') {

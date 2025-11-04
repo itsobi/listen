@@ -12,9 +12,6 @@ export async function SpotifyPodcast({ podcastName }: { podcastName: string }) {
   const publisher: string | undefined = podcastInfo?.publisher;
   const image: string | undefined = podcastInfo?.images?.[0]?.url;
 
-  console.log('podcastInfo', podcastInfo);
-  console.log('episodes', episodes);
-
   if (!success) {
     return <ErrorState heading="Error" description={message} goBack={true} />;
   }

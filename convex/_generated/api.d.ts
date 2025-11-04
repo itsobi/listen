@@ -9,6 +9,7 @@
  */
 
 import type * as preferences from "../preferences.js";
+import type * as videoPreferences from "../videoPreferences.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   preferences: typeof preferences;
+  videoPreferences: typeof videoPreferences;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

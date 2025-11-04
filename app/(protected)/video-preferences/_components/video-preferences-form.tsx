@@ -11,10 +11,7 @@ import {
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  IconBrandAppleFilled,
-  IconBrandSpotifyFilled,
-} from '@tabler/icons-react';
+import { IconBrandAppleFilled } from '@tabler/icons-react';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useEffect, useState } from 'react';
@@ -28,79 +25,83 @@ import {
 import { Loader, SendHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { getPodcastNames } from '@/lib/queries/get-podcast-names';
-import { VerifyPodcastsDialog } from './verify-podcasts-dialog';
 import { cn, generateRandomColor } from '@/lib/utils';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LoadingScreen } from '@/components/global/loading-screen';
-import { Podcast, usePreferencesStore } from '@/lib/store';
-import { Id } from '@/convex/_generated/dataModel';
+import { useVideoPreferencesStore } from '@/lib/store';
+import { VerifyVideosDialog } from './verify-videos-dialog';
 
 const providers = [
   {
-    label: 'Apple',
-    value: 'apple',
+    label: 'YouTube',
+    value: 'youtube',
     icon: <IconBrandAppleFilled className="size-4" />,
-  },
-  {
-    label: 'Spotify',
-    value: 'spotify',
-    icon: <IconBrandSpotifyFilled className="size-4" />,
   },
 ];
 
 const formSchema = z.object({
   providers: z.array(z.string()).min(1, 'Please select at least one provider'),
-  podcasts: z.array(z.string()).min(1, 'Please add at least one podcast'),
+  channels: z.array(z.string()).min(1, 'Please add at least one channel'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function PreferencesForm() {
-  const preferences = useQuery(api.preferences.getPreferences);
-  const [currentPodcast, setCurrentPodcast] = useState<string>('');
+export function VideoPreferencesForm() {
+  const videoPreferences = useQuery(api.videoPreferences.getVideoPreferences);
+  const [currentChannel, setCurrentChannel] = useState<string>('');
   const [showDialog, setShowDialog] = useState(false);
   const [isLoadingFormState, setIsLoadingFormState] = useState(false);
-  const { setPodcasts } = usePreferencesStore();
+  const { setChannels } = useVideoPreferencesStore();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      providers: preferences?.providers || [],
-      podcasts: preferences?.podcasts.map((podcast) => podcast.name) || [],
+      providers: videoPreferences?.providers || [],
+      channels:
+        videoPreferences?.channels.map((channels) => channels.name) || [],
     },
     shouldFocusError: false,
   });
 
-  const updatePreferences = useMutation(api.preferences.updatePreferences);
+  const updateVideoPreferences = useMutation(
+    api.videoPreferences.updateVideoPreferences
+  );
 
   useEffect(() => {
-    if (preferences && preferences.providers.length > 0) {
+    if (videoPreferences && videoPreferences.channels.length > 0) {
+      const channelNames = videoPreferences.channels.map(
+        (channel) => channel.name
+      );
       form.reset({
-        providers: preferences.providers,
-        podcasts: preferences.podcasts.map((podcast) => podcast.name),
+        providers: videoPreferences.providers,
+        channels: channelNames,
       });
     }
-    form.trigger();
-  }, [preferences, form]);
+    // Trigger validation when form initializes to get correct validation state
+    if (videoPreferences !== undefined) {
+      form.trigger();
+    }
+  }, [videoPreferences, form]);
 
   const addPodcast = () => {
-    const currentPodcasts = form.getValues('podcasts') || [];
-    if (currentPodcasts.length >= 5) {
-      toast.error('You can only add up to 5 podcasts.');
+    const currentChannels = form.getValues('channels') || [];
+    if (currentChannels.length >= 1) {
+      toast.error(
+        'You are only allowed to add one channel on your current plan.'
+      );
       return;
     }
     if (
-      currentPodcast.trim() &&
-      !currentPodcasts.includes(currentPodcast.trim())
+      currentChannel.trim() &&
+      !currentChannels.includes(currentChannel.trim())
     ) {
-      const updatedPodcasts = [...currentPodcasts, currentPodcast.trim()];
-      form.setValue('podcasts', updatedPodcasts, {
+      const updatedChannels = [...currentChannels, currentChannel.trim()];
+      form.setValue('channels', updatedChannels, {
         shouldValidate: true,
         shouldDirty: true,
       });
-      setCurrentPodcast('');
+      setCurrentChannel('');
     }
   };
 
@@ -111,11 +112,11 @@ export function PreferencesForm() {
     }
   };
 
-  const removePodcast = (podcast: string) => {
-    const currentPodcasts = form.getValues('podcasts') || [];
-    if (currentPodcasts.includes(podcast)) {
-      const updatedPodcasts = currentPodcasts.filter((p) => p !== podcast);
-      form.setValue('podcasts', updatedPodcasts, {
+  const removeChannel = (channel: string) => {
+    const currentChannels = form.getValues('channels') || [];
+    if (currentChannels.includes(channel)) {
+      const updatedChannels = currentChannels.filter((c) => c !== channel);
+      form.setValue('channels', updatedChannels, {
         shouldValidate: true,
         shouldDirty: true,
       });
@@ -124,113 +125,32 @@ export function PreferencesForm() {
 
   const onSubmit = async (data: FormValues) => {
     setIsLoadingFormState(true);
-    try {
-      const originalPodcastNames =
-        preferences?.podcasts.map((p) => p.name) || [];
-      const podcastsChanged =
-        JSON.stringify(data.podcasts.sort()) !==
-        JSON.stringify(originalPodcastNames.sort());
 
-      if (podcastsChanged) {
-        // Only verify NEW podcasts (not already in preferences)
-        const newPodcastNames = data.podcasts.filter(
-          (name) => !originalPodcastNames.includes(name)
+    // TODO: add rate lime here
+
+    toast.promise(
+      async () => {
+        const response = await fetch(
+          `/api/youtube/channels/${data.channels[0]}`
         );
 
-        // If there are no new podcasts, just handle removals
-        if (newPodcastNames.length === 0) {
-          const existingPodcasts =
-            preferences?.podcasts.filter((p) =>
-              data.podcasts.includes(p.name)
-            ) || [];
+        const result = await response.json();
 
-          const result = await updatePreferences({
-            preferenceId: preferences?._id as Id<'preferences'>,
-            providers: data.providers,
-            podcasts: existingPodcasts,
-          });
-
-          if (result.success) {
-            toast.success(result.message);
-            form.reset({
-              providers: data.providers,
-              podcasts: data.podcasts,
-            });
-          } else {
-            toast.error(result.message || 'Failed to update preferences');
-          }
-
+        if (!result.success) {
+          setShowDialog(false);
           setIsLoadingFormState(false);
-          return;
+          return result.message;
         }
-
-        // Verify only new podcasts before showing confirmation dialog
-        await toast.promise(
-          (async () => {
-            const verifiedPodcasts = await getPodcastNames(newPodcastNames);
-
-            if (!verifiedPodcasts.success || !verifiedPodcasts.data) {
-              throw new Error(
-                verifiedPodcasts.error || 'Failed to verify podcasts'
-              );
-            }
-
-            const validPodcasts = verifiedPodcasts.data
-              .filter((item) => item.success && item.data)
-              .map((item) => item.data![0])
-              .map((podcast) => ({
-                name: podcast.name,
-                creatorName: podcast.artistName,
-                image: podcast.image ?? undefined,
-                color: generateRandomColor(),
-              }));
-
-            if (validPodcasts.length === 0) {
-              throw new Error(
-                'No valid podcasts found. Please check your podcast names.'
-              );
-            }
-
-            // Store only NEW verified podcasts and show dialog for confirmation
-            setPodcasts(validPodcasts as Podcast[]);
-            setShowDialog(true);
-
-            return 'Podcasts verified successfully';
-          })(),
-          {
-            loading: 'Verifying podcasts...',
-            success: (msg) => msg,
-            error: (err) =>
-              err.message || 'Something went wrong verifying podcasts',
-          }
-        );
-
-        // wait for dialog confirm/cancel
-        return;
+        setChannels(result.data);
+        setShowDialog(true);
+        return result.message;
+      },
+      {
+        loading: 'Verifying channels...',
+        success: (message) => message,
+        error: (message) => message,
       }
-
-      // Podcasts haven't changed — just update providers
-      const result = await updatePreferences({
-        preferenceId: preferences?._id as Id<'preferences'>,
-        providers: data.providers,
-      });
-
-      if (result.success) {
-        toast.success(result.message);
-        form.reset({
-          providers: data.providers,
-          podcasts: data.podcasts,
-        });
-      } else {
-        toast.error(result.message || 'Failed to update preferences');
-      }
-
-      setIsLoadingFormState(false);
-    } catch (error) {
-      console.error('Error updating preferences:', error);
-      toast.error('Failed to update preferences');
-      setIsLoadingFormState(false);
-    }
+    );
   };
 
   const handleDialogSuccess = () => {
@@ -238,7 +158,7 @@ export function PreferencesForm() {
     setIsLoadingFormState(false);
     form.reset({
       providers: form.getValues('providers'),
-      podcasts: form.getValues('podcasts'),
+      channels: form.getValues('channels'),
     });
     setShowDialog(false);
   };
@@ -246,17 +166,18 @@ export function PreferencesForm() {
   const handleDialogCancel = () => {
     setShowDialog(false);
     setIsLoadingFormState(false);
-    setPodcasts([]);
+    setChannels([]);
   };
 
-  if (preferences === undefined) return <LoadingScreen message="Loading..." />;
+  if (videoPreferences === undefined)
+    return <LoadingScreen message="Loading..." />;
 
   return (
     <>
       <form id="preferences-form" onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-            <div className="min-w-[250px]">
+          <div className="flex flex-col lg:flex-row  gap-4 lg:gap-8">
+            <div>
               <FieldLabel htmlFor="provider" className="text-lg">
                 Provider
               </FieldLabel>
@@ -273,7 +194,7 @@ export function PreferencesForm() {
                     <Field key={provider.value}>
                       <Label
                         key={provider.value}
-                        className="flex flex-col hover:bg-accent/50 gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-primary has-[[aria-checked=true]]:bg-primary/10 cursor-pointer"
+                        className="lg:max-w-[400px] flex flex-col hover:bg-accent/50 gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-primary has-[[aria-checked=true]]:bg-primary/10 cursor-pointer"
                       >
                         <div className="flex items-center justify-between">
                           <span>{provider.icon}</span>
@@ -314,7 +235,7 @@ export function PreferencesForm() {
           <FieldSeparator />
 
           <Controller
-            name="podcasts"
+            name="channels"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field
@@ -322,10 +243,10 @@ export function PreferencesForm() {
                 className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8"
               >
                 <div className="min-w-[250px]">
-                  <FieldLabel className="text-lg">Podcasts</FieldLabel>
+                  <FieldLabel className="text-lg">Channels</FieldLabel>
                   <FieldDescription>
-                    Enter the name of the podcast(s) you would like to track.
-                    You can add up to 5 podcasts.
+                    Enter the name of the channel you would like to track. You
+                    are allowed to add only one channel on your current plan.
                   </FieldDescription>
                 </div>
 
@@ -335,8 +256,8 @@ export function PreferencesForm() {
                       <InputGroupInput
                         aria-invalid={fieldState.invalid}
                         placeholder="The Obi One Podcast"
-                        value={currentPodcast}
-                        onChange={(e) => setCurrentPodcast(e.target.value)}
+                        value={currentChannel}
+                        onChange={(e) => setCurrentChannel(e.target.value)}
                         onKeyDown={handleKeyDown}
                         className={
                           fieldState.invalid ? 'border-destructive' : ''
@@ -346,11 +267,11 @@ export function PreferencesForm() {
                         <InputGroupButton
                           variant="ghost"
                           onClick={addPodcast}
-                          disabled={!currentPodcast.trim()}
+                          disabled={!currentChannel.trim()}
                         >
                           <SendHorizontal
                             className={cn(
-                              currentPodcast.length > 0 && 'animate-pulse'
+                              currentChannel.length > 0 && 'animate-pulse'
                             )}
                           />
                         </InputGroupButton>
@@ -361,12 +282,12 @@ export function PreferencesForm() {
                     )}
                     {field.value && field.value.length > 0 ? (
                       <div className="flex flex-wrap gap-2 p-4 rounded-lg border min-h-[60px] shadow-sm max-w-xl">
-                        {field.value.map((podcast, index) => (
+                        {field.value.map((channel, index) => (
                           <Badge key={index}>
-                            <span>{podcast}</span>
+                            <span>{channel}</span>
                             <button
                               type="button"
-                              onClick={() => removePodcast(podcast)}
+                              onClick={() => removeChannel(channel)}
                               className="cursor-pointer text-destructive hover:text-destructive/40"
                             >
                               <X className="size-4" />
@@ -391,10 +312,10 @@ export function PreferencesForm() {
               isLoadingFormState ||
               form.formState.isSubmitting ||
               !form.formState.isValid ||
-              (preferences !== null && !form.formState.isDirty)
+              (videoPreferences !== null && !form.formState.isDirty)
             }
           >
-            {isLoadingFormState ? (
+            {isLoadingFormState || form.formState.isSubmitting ? (
               <Loader className="size-4 animate-spin" />
             ) : (
               'Save'
@@ -403,13 +324,13 @@ export function PreferencesForm() {
         </div>
       </form>
 
-      <VerifyPodcastsDialog
+      <VerifyVideosDialog
         showDialog={showDialog}
         setShowDialog={setShowDialog}
         providers={form.watch('providers')}
-        setIsLoadingFormState={setIsLoadingFormState} // pass loading state dispatch for "Save" button in form
         onSuccess={handleDialogSuccess}
         onCancel={handleDialogCancel}
+        setIsLoadingFormState={setIsLoadingFormState}
       />
     </>
   );

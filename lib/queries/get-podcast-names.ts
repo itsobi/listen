@@ -1,10 +1,12 @@
+// using apple podcast api to get podcast names
 export async function getPodcastNames(podcasts: string[]) {
   try {
     const podcastData = await Promise.all(
       podcasts.map(async (podcast) => {
         const encodedPodcast = encodeURIComponent(podcast);
         const response = await fetch(
-          `https://itunes.apple.com/search?term=${encodedPodcast}&media=podcast`
+          `https://itunes.apple.com/search?term=${encodedPodcast}&media=podcast`,
+          { next: { revalidate: 60 * 60 } }
         );
         if (!response.ok) {
           return { success: false, error: 'Server error' };

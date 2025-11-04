@@ -8,10 +8,7 @@ import {
 import { SpotifyEpisode } from '@/lib/queries/spotify/spotify-types';
 import { cn, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  IconBrandAppleFilled,
-  IconBrandSpotifyFilled,
-} from '@tabler/icons-react';
+import { IconBrandSpotifyFilled } from '@tabler/icons-react';
 import { Check, Copy, Podcast, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -36,7 +33,6 @@ export function SpotifyPodcastView({
       await navigator.clipboard.writeText(episodeUrl);
       setCopiedEpisodeId(episodeId);
 
-      // Reset after 2 seconds
       setTimeout(() => setCopiedEpisodeId(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -77,6 +73,7 @@ export function SpotifyPodcastView({
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   {formatDate(episode.release_date)}
+                  {/* {episode.release_date} */}
                 </p>
                 <Tooltip>
                   <TooltipTrigger asChild>

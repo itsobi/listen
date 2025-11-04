@@ -5,23 +5,22 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  ApplePodcastEpisode,
-  ApplePodcastShow,
-} from '@/lib/queries/apple/apple-types';
+import { ApplePodcastEpisode } from '@/lib/queries/apple/apple-types';
 import { cn, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { IconBrandAppleFilled } from '@tabler/icons-react';
-import { Check, Copy, Sparkles } from 'lucide-react';
+import { Check, Copy, Podcast, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface Props {
-  podcast: ApplePodcastShow;
+  name: string;
+  publisher: string;
+  image: string | undefined;
   episodes: ApplePodcastEpisode[];
 }
 
-export function ApplePodcastView({ podcast, episodes }: Props) {
+export function ApplePodcastView({ name, publisher, image, episodes }: Props) {
   const [copiedTrackId, setCopiedTrackId] = useState<number | null>(null);
 
   const handleCopy = async (episodeUrl: string, trackId: number) => {
@@ -29,7 +28,6 @@ export function ApplePodcastView({ podcast, episodes }: Props) {
       await navigator.clipboard.writeText(episodeUrl);
       setCopiedTrackId(trackId);
 
-      // Reset after 2 seconds
       setTimeout(() => setCopiedTrackId(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -40,15 +38,19 @@ export function ApplePodcastView({ podcast, episodes }: Props) {
   return (
     <div>
       <div className="flex gap-4">
-        <img
-          src={podcast.artworkUrl600}
-          alt={podcast.trackName}
-          className="size-40 rounded-lg object-cover"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className="size-40 rounded-lg object-cover"
+          />
+        ) : (
+          <Podcast className="size-40 rounded-lg object-cover" />
+        )}
         <div className="space-y-1">
           <IconBrandAppleFilled className="size-4" />
-          <h3 className="text-lg font-semibold">{podcast.collectionName}</h3>
-          <p>{podcast.artistName}</p>
+          <h3 className="text-lg font-semibold">{name}</h3>
+          <p>{publisher}</p>
         </div>
       </div>
       <div className="mt-10">

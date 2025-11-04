@@ -21,14 +21,16 @@ interface Props {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   providers: string[];
+  setIsLoadingFormState: Dispatch<SetStateAction<boolean>>;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export function VerifyPodcastDialog({
+export function VerifyPodcastsDialog({
   showDialog,
   setShowDialog,
   providers,
+  setIsLoadingFormState, // loading state for save button
   onSuccess,
   onCancel,
 }: Props) {
@@ -43,11 +45,15 @@ export function VerifyPodcastDialog({
     try {
       // Check if preferences exist to determine create vs update
       if (preferences) {
-        // Update existing preferences
+        // Merge existing podcasts with new ones
+        const existingPodcasts = preferences.podcasts || [];
+        const mergedPodcasts = [...existingPodcasts, ...podcasts];
+
+        // Update preferences with merged podcasts
         const result = await updatePreferences({
           preferenceId: preferences._id,
           providers,
-          podcasts,
+          podcasts: mergedPodcasts,
         });
 
         if (result.success) {
@@ -62,7 +68,7 @@ export function VerifyPodcastDialog({
           return;
         }
       } else {
-        // Create new preferences
+        // Create new preferences (no existing podcasts to merge)
         const result = await createPreference({
           providers,
           podcasts,
@@ -84,6 +90,7 @@ export function VerifyPodcastDialog({
       console.error('Error saving preferences:', error);
       toast.error('Failed to save preferences');
     } finally {
+      setIsLoadingFormState(false);
       setIsPending(false);
     }
   };
@@ -92,9 +99,11 @@ export function VerifyPodcastDialog({
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Verify Podcasts</AlertDialogTitle>
+          <AlertDialogTitle>Verify New Podcasts</AlertDialogTitle>
           <AlertDialogDescription>
-            Please verify the podcasts you would like to track.
+            If these are the podcasts you would like to track, click
+            &apos;Save&apos;. If you would like to add more podcasts, click
+            &apos;Cancel&apos; and add them to the form.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -116,7 +125,7 @@ export function VerifyPodcastDialog({
                   {index + 1}. {podcast.name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {podcast.artistName}
+                  {podcast.creatorName}
                 </p>
               </div>
             </div>

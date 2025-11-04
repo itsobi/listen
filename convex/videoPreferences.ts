@@ -1,26 +1,25 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
-export const getPreferences = query({
+export const getVideoPreferences = query({
   args: {},
   handler: async (ctx) => {
     const user = await ctx.auth.getUserIdentity();
-
     if (!user) return null;
-
     return await ctx.db
-      .query('preferences')
+      .query('videoPreferences')
       .withIndex('by_user_id', (q) => q.eq('user_id', user.subject))
       .first();
   },
 });
 
-export const createPreference = mutation({
+export const createVideoPreference = mutation({
   args: {
     providers: v.array(v.string()),
-    podcasts: v.array(
+    channels: v.array(
       v.object({
         name: v.string(),
+        channelId: v.string(),
         creatorName: v.string(),
         image: v.optional(v.string()),
         color: v.string(),
@@ -34,32 +33,36 @@ export const createPreference = mutation({
         return { success: false, message: 'Unauthorized' };
       }
 
-      await ctx.db.insert('preferences', {
+      await ctx.db.insert('videoPreferences', {
         user_id: user.subject,
         providers: args.providers,
-        podcasts: args.podcasts,
+        channels: args.channels,
       });
-      return { success: true, message: 'Preferences created successfully' };
+      return {
+        success: true,
+        message: 'Video preferences created successfully',
+      };
     } catch (error) {
       return {
         success: false,
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to create preference',
+            : 'Failed to create video preference',
       };
     }
   },
 });
 
-export const updatePreferences = mutation({
+export const updateVideoPreferences = mutation({
   args: {
-    preferenceId: v.id('preferences'),
+    videoPreferenceId: v.id('videoPreferences'),
     providers: v.optional(v.array(v.string())),
-    podcasts: v.optional(
+    channels: v.optional(
       v.array(
         v.object({
           name: v.string(),
+          channelId: v.string(),
           creatorName: v.string(),
           image: v.optional(v.string()),
           color: v.string(),
@@ -74,17 +77,17 @@ export const updatePreferences = mutation({
         return { success: false, message: 'Unauthorized' };
       }
 
-      const updates: { providers?: string[]; podcasts?: any[] } = {};
+      const updates: { providers?: string[]; channels?: any[] } = {};
 
       if (args.providers) {
         updates.providers = args.providers;
       }
 
-      if (args.podcasts) {
-        updates.podcasts = args.podcasts;
+      if (args.channels) {
+        updates.channels = args.channels;
       }
 
-      await ctx.db.patch(args.preferenceId, updates);
+      await ctx.db.patch(args.videoPreferenceId, updates);
       return { success: true, message: 'Preferences updated successfully' };
     } catch (error) {
       return {

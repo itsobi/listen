@@ -1,7 +1,6 @@
 'use client';
 
 import { Navbar } from '@/components/landing-page/navbar';
-import { Button } from '@/components/ui/button';
 import { CustomVideoPlayer } from '@/components/landing-page/custom-video-player';
 import Link from 'next/link';
 import { motion } from 'motion/react';
