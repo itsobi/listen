@@ -17,7 +17,6 @@ export const getPreferences = query({
 
 export const createPreference = mutation({
   args: {
-    providers: v.array(v.string()),
     podcasts: v.array(
       v.object({
         name: v.string(),
@@ -36,7 +35,6 @@ export const createPreference = mutation({
 
       await ctx.db.insert('preferences', {
         user_id: user.subject,
-        providers: args.providers,
         podcasts: args.podcasts,
       });
       return { success: true, message: 'Preferences created successfully' };

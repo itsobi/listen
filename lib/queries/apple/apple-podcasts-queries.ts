@@ -1,3 +1,5 @@
+import { QueryTags } from '@/lib/query-tags';
+
 export const getApplePodcast = async (podcastName: string) => {
   try {
     const res = await fetch(
@@ -6,7 +8,10 @@ export const getApplePodcast = async (podcastName: string) => {
     );
 
     if (!res.ok) {
-      return { success: false, message: 'Apple podcast request failed' };
+      return {
+        success: false,
+        message: 'Apple podcast request failed. Please try again.',
+      };
     }
 
     const data = await res.json();
@@ -33,7 +38,10 @@ export const getApplePodcast = async (podcastName: string) => {
     return { success: false, message: 'No valid feed URLs found.' };
   } catch (error) {
     console.error('Error getting podcast', error);
-    return { success: false, message: 'Apple podcast request failed' };
+    return {
+      success: false,
+      message: 'Apple podcast request failed. Please try again.',
+    };
   }
 };
 
@@ -48,13 +56,13 @@ export const getApplePodcastEpisodes = async (podcastName: string) => {
 
     const response = await fetch(
       `https://itunes.apple.com/lookup?id=${data.podcastId}&entity=podcastEpisode&limit=5`,
-      { next: { revalidate: 60 * 60 } }
+      { next: { revalidate: 60 * 60, tags: [QueryTags.APPLE_PODCASTS] } }
     );
 
     if (!response.ok) {
       return {
         success: false,
-        message: 'Apple podcast episodes request failed',
+        message: 'Apple podcast episodes request failed. Please try again.',
       };
     }
 
@@ -91,6 +99,9 @@ export const getApplePodcastEpisodes = async (podcastName: string) => {
     return { success: false, message: 'No valid podcast episodes found.' };
   } catch (error) {
     console.error('Error getting podcast episodes', error);
-    return { success: false, message: 'Apple podcast episodes request failed' };
+    return {
+      success: false,
+      message: 'Apple podcast episodes request failed. Please try again.',
+    };
   }
 };

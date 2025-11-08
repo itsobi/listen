@@ -30,28 +30,15 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getPodcastNames } from '@/lib/queries/get-podcast-names';
 import { VerifyPodcastsDialog } from './verify-podcasts-dialog';
-import { cn, generateRandomColor } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { generateRandomColor } from '@/lib/helpers';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LoadingScreen } from '@/components/global/loading-screen';
 import { Podcast, usePreferencesStore } from '@/lib/store';
 import { Id } from '@/convex/_generated/dataModel';
 
-const providers = [
-  {
-    label: 'Apple',
-    value: 'apple',
-    icon: <IconBrandAppleFilled className="size-4" />,
-  },
-  {
-    label: 'Spotify',
-    value: 'spotify',
-    icon: <IconBrandSpotifyFilled className="size-4" />,
-  },
-];
-
 const formSchema = z.object({
-  providers: z.array(z.string()).min(1, 'Please select at least one provider'),
   podcasts: z.array(z.string()).min(1, 'Please add at least one podcast'),
 });
 
@@ -67,7 +54,6 @@ export function PreferencesForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      providers: preferences?.providers || [],
       podcasts: preferences?.podcasts.map((podcast) => podcast.name) || [],
     },
     shouldFocusError: false,
@@ -76,9 +62,8 @@ export function PreferencesForm() {
   const updatePreferences = useMutation(api.preferences.updatePreferences);
 
   useEffect(() => {
-    if (preferences && preferences.providers.length > 0) {
+    if (preferences && preferences.podcasts.length > 0) {
       form.reset({
-        providers: preferences.providers,
         podcasts: preferences.podcasts.map((podcast) => podcast.name),
       });
     }
@@ -146,14 +131,12 @@ export function PreferencesForm() {
 
           const result = await updatePreferences({
             preferenceId: preferences?._id as Id<'preferences'>,
-            providers: data.providers,
             podcasts: existingPodcasts,
           });
 
           if (result.success) {
             toast.success(result.message);
             form.reset({
-              providers: data.providers,
               podcasts: data.podcasts,
             });
           } else {
@@ -209,22 +192,6 @@ export function PreferencesForm() {
         return;
       }
 
-      // Podcasts haven't changed — just update providers
-      const result = await updatePreferences({
-        preferenceId: preferences?._id as Id<'preferences'>,
-        providers: data.providers,
-      });
-
-      if (result.success) {
-        toast.success(result.message);
-        form.reset({
-          providers: data.providers,
-          podcasts: data.podcasts,
-        });
-      } else {
-        toast.error(result.message || 'Failed to update preferences');
-      }
-
       setIsLoadingFormState(false);
     } catch (error) {
       console.error('Error updating preferences:', error);
@@ -237,7 +204,6 @@ export function PreferencesForm() {
     // Reset form to mark it as not dirty and clear any validation errors
     setIsLoadingFormState(false);
     form.reset({
-      providers: form.getValues('providers'),
       podcasts: form.getValues('podcasts'),
     });
     setShowDialog(false);
@@ -255,64 +221,6 @@ export function PreferencesForm() {
     <>
       <form id="preferences-form" onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-            <div className="min-w-[250px]">
-              <FieldLabel htmlFor="provider" className="text-lg">
-                Provider
-              </FieldLabel>
-              <FieldDescription>
-                Select the provider(s) you would like to use for your podcasts.
-              </FieldDescription>
-            </div>
-            <Controller
-              name="providers"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <>
-                  {providers.map((provider) => (
-                    <Field key={provider.value}>
-                      <Label
-                        key={provider.value}
-                        className="flex flex-col hover:bg-accent/50 gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-primary has-[[aria-checked=true]]:bg-primary/10 cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{provider.icon}</span>
-                          <Checkbox
-                            id={provider.value}
-                            name={field.name}
-                            checked={
-                              field.value?.includes(provider.value)
-                                ? true
-                                : false
-                            }
-                            onCheckedChange={(checked) => {
-                              const updatedProviders = checked
-                                ? [...(field.value || []), provider.value]
-                                : field.value?.filter(
-                                    (value) => value !== provider.value
-                                  ) || [];
-
-                              form.setValue('providers', updatedProviders, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                            }}
-                            className="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white "
-                          />
-                        </div>
-                        <span>{provider.label}</span>
-                      </Label>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  ))}
-                </>
-              )}
-            />
-          </div>
-          <FieldSeparator />
-
           <Controller
             name="podcasts"
             control={form.control}
@@ -406,7 +314,6 @@ export function PreferencesForm() {
       <VerifyPodcastsDialog
         showDialog={showDialog}
         setShowDialog={setShowDialog}
-        providers={form.watch('providers')}
         setIsLoadingFormState={setIsLoadingFormState} // pass loading state dispatch for "Save" button in form
         onSuccess={handleDialogSuccess}
         onCancel={handleDialogCancel}

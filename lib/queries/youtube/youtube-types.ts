@@ -38,3 +38,16 @@ export type YoutubeVideo = {
   };
   snippet: YoutubeSnippet;
 };
+
+export type YoutubeChannelStats = {
+  kind: string;
+  etag: string;
+  id: string;
+  videoCount: string;
+  statistics: {
+    viewCount: string;
+    subscriberCount: string;
+    hiddenSubscriberCount: boolean;
+    videoCount: string;
+  };
+};

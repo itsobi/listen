@@ -13,6 +13,27 @@ export const getVideoPreferences = query({
   },
 });
 
+export const getVideoPreferencesByChannelId = query({
+  args: {
+    channelId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) return null;
+
+    const userVideoPreferences = await ctx.db
+      .query('videoPreferences')
+      .withIndex('by_user_id', (q) => q.eq('user_id', user.subject))
+      .first();
+
+    if (!userVideoPreferences) return null;
+
+    return userVideoPreferences.channels.find(
+      (channel) => channel.channelId === args.channelId
+    );
+  },
+});
+
 export const createVideoPreference = mutation({
   args: {
     providers: v.array(v.string()),

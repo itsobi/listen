@@ -13,7 +13,8 @@ import {
 import { api } from '@/convex/_generated/api';
 import { YoutubeChannel } from '@/lib/queries/youtube/youtube-types';
 import { useVideoPreferencesStore } from '@/lib/store';
-import { cn, generateRandomColor } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { generateRandomColor } from '@/lib/helpers';
 import { useMutation, useQuery } from 'convex/react';
 import { Check, Loader, TvMinimalPlay } from 'lucide-react';
 import { Dispatch, SetStateAction, useState, useTransition } from 'react';

@@ -1,8 +1,8 @@
 import { ErrorState } from '@/components/global/error-state';
 import { PageHeading } from '@/components/global/page-heading';
 import { Suspense } from 'react';
-import { YoutubeChannel } from './_componenets/youtube-channel';
-import { YoutubeChannelSkeleton } from './_componenets/youtube-channel-skeleton';
+import { YoutubeChannel } from './_components/youtube-channel';
+import { YoutubeChannelSkeleton } from './_components/youtube-channel-skeleton';
 
 export default async function VideoNamePage({
   params,
@@ -19,10 +19,13 @@ export default async function VideoNamePage({
   if (provider === 'youtube' && channelId) {
     return (
       <>
-        <PageHeading title={`${decodedChannelName} - YouTube`} />
+        <PageHeading title={`${decodedChannelName}`} />
 
         <Suspense fallback={<YoutubeChannelSkeleton />}>
-          <YoutubeChannel channelId={channelId} />
+          <YoutubeChannel
+            channelId={channelId}
+            channelName={decodedChannelName}
+          />
         </Suspense>
       </>
     );

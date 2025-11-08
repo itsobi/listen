@@ -82,74 +82,30 @@ export function SidebarNavCollapsible() {
 
             <SidebarGroupContent>
               {preferences.podcasts.map((item, index) => (
-                <Collapsible
-                  key={index}
-                  className="group/collapsible"
-                  defaultOpen={preferences.providers.some((p) =>
-                    isRouteActive('podcasts', item.name, p)
-                  )}
-                >
-                  <SidebarGroup>
-                    <SidebarGroupLabel
-                      asChild
-                      className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                <SidebarGroup key={index}>
+                  <SidebarGroupLabel
+                    asChild
+                    className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  >
+                    <SidebarMenuButton
+                      isActive={isRouteActive('podcasts', item.name, 'apple')}
+                      onClick={() =>
+                        handleRouteTo('podcasts', item.name, 'apple')
+                      }
+                      className="flex w-full items-center justify-between cursor-pointer"
                     >
-                      <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="h-3 w-3 rounded-[4px]"
-                            style={{ backgroundColor: item.color }}
-                          />
-                          <span className="truncate">
-                            {truncateName(item.name)}
-                          </span>
-                        </div>
-                        <ChevronDown className="transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
-                      </CollapsibleTrigger>
-                    </SidebarGroupLabel>
-                    <CollapsibleContent>
-                      <div className="ml-3 px-2 border-l">
-                        <SidebarGroupContent className="mt-2">
-                          <SidebarMenu>
-                            {preferences.providers.map((provider, index) => (
-                              <SidebarMenuItem key={index}>
-                                <SidebarMenuButton
-                                  className={cn(
-                                    'capitalize',
-                                    isRouteActive(
-                                      'podcasts',
-                                      item.name,
-                                      provider
-                                    ) && 'dark:text-primary'
-                                  )}
-                                  isActive={isRouteActive(
-                                    'podcasts',
-                                    item.name,
-                                    provider
-                                  )}
-                                  onClick={() =>
-                                    handleRouteTo(
-                                      'podcasts',
-                                      item.name,
-                                      provider
-                                    )
-                                  }
-                                >
-                                  {
-                                    ProviderIconsMap[
-                                      provider as keyof typeof ProviderIconsMap
-                                    ]
-                                  }
-                                  {provider}
-                                </SidebarMenuButton>
-                              </SidebarMenuItem>
-                            ))}
-                          </SidebarMenu>
-                        </SidebarGroupContent>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-3 w-3 rounded-[4px]"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="truncate">
+                          {truncateName(item.name)}
+                        </span>
                       </div>
-                    </CollapsibleContent>
-                  </SidebarGroup>
-                </Collapsible>
+                    </SidebarMenuButton>
+                  </SidebarGroupLabel>
+                </SidebarGroup>
               ))}
             </SidebarGroupContent>
           </SidebarGroup>

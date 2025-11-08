@@ -1,3 +1,4 @@
+import { QueryTags } from '@/lib/query-tags';
 import 'server-only';
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -26,13 +27,19 @@ const getToken = async () => {
     });
 
     if (!response.ok) {
-      return { success: false, message: 'Spotify token request failed' };
+      return {
+        success: false,
+        message: 'Spotify token request failed. Please try again.',
+      };
     }
 
     return await response.json();
   } catch (error) {
     console.error('Error getting token', error);
-    return { success: false, message: 'Failed to get token' };
+    return {
+      success: false,
+      message: 'Failed to get token. Please try again.',
+    };
   }
 };
 
@@ -53,7 +60,10 @@ const getPodcastByName = async (podcastName: string) => {
     );
 
     if (!response.ok) {
-      return { success: false, message: 'Spotify podcast request failed' };
+      return {
+        success: false,
+        message: 'Spotify podcast request failed. Please try again.',
+      };
     }
 
     const data = await response.json();
@@ -70,7 +80,10 @@ const getPodcastByName = async (podcastName: string) => {
     };
   } catch (error) {
     console.error('Error getting podcast', error);
-    return { success: false, message: 'Spotify podcast request failed' };
+    return {
+      success: false,
+      message: 'Spotify podcast request failed. Please try again.',
+    };
   }
 };
 
@@ -86,12 +99,15 @@ export const getSpotifyEpisodes = async (podcastName: string) => {
       `https://api.spotify.com/v1/shows/${data.podcastId}/episodes?limit=5`,
       {
         headers: { Authorization: `Bearer ${data.token}` },
-        next: { revalidate: 60 * 60 }, // Revalidate every hour
+        next: { revalidate: 60 * 60, tags: [QueryTags.SPOTIFY_PODCASTS] }, // Revalidate every hour
       }
     );
 
     if (!response.ok) {
-      return { success: false, message: 'Spotify episodes request failed' };
+      return {
+        success: false,
+        message: 'Spotify episodes request failed. Please try again.',
+      };
     }
 
     const episodesData = await response.json();
@@ -107,6 +123,9 @@ export const getSpotifyEpisodes = async (podcastName: string) => {
     };
   } catch (error) {
     console.error('Error getting episodes', error);
-    return { success: false, message: 'Spotify episodes request failed' };
+    return {
+      success: false,
+      message: 'Spotify episodes request failed. Please try again.',
+    };
   }
 };

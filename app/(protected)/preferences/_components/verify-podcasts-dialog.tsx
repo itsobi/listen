@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 interface Props {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
-  providers: string[];
   setIsLoadingFormState: Dispatch<SetStateAction<boolean>>;
   onSuccess: () => void;
   onCancel: () => void;
@@ -29,7 +28,6 @@ interface Props {
 export function VerifyPodcastsDialog({
   showDialog,
   setShowDialog,
-  providers,
   setIsLoadingFormState, // loading state for save button
   onSuccess,
   onCancel,
@@ -52,7 +50,6 @@ export function VerifyPodcastsDialog({
         // Update preferences with merged podcasts
         const result = await updatePreferences({
           preferenceId: preferences._id,
-          providers,
           podcasts: mergedPodcasts,
         });
 
@@ -70,7 +67,6 @@ export function VerifyPodcastsDialog({
       } else {
         // Create new preferences (no existing podcasts to merge)
         const result = await createPreference({
-          providers,
           podcasts,
         });
 

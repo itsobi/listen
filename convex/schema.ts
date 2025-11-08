@@ -4,7 +4,6 @@ import { v } from 'convex/values';
 export default defineSchema({
   preferences: defineTable({
     user_id: v.string(),
-    providers: v.array(v.string()),
     podcasts: v.array(
       v.object({
         name: v.string(),
