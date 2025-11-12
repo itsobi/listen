@@ -1,5 +1,6 @@
 import { ConvexClientProvider } from '@/components/providers/convex-client-provider';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { Notifications } from '@/components/sidebar/notifications';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import {
   SidebarInset,
@@ -19,7 +20,10 @@ export default function ProtectedLayout({
         <SidebarInset>
           <main>
             <div className="flex items-center justify-between p-4">
-              <SidebarTrigger className="md:hidden" />
+              <div className="flex items-center gap-2 md:hidden">
+                <SidebarTrigger />
+                <Notifications />
+              </div>
               <div className="md:block" />
               <ThemeToggle />
             </div>

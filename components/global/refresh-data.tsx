@@ -22,7 +22,7 @@ export function RefreshData() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant="ghost" size="icon" onClick={handleRefresh}>
+        <Button variant="outline" size="icon" onClick={handleRefresh}>
           {isRefreshing ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (

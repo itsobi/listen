@@ -85,8 +85,11 @@ export function SignUpForm({ verifying, setVerifying }: Props) {
   return (
     <div className="flex flex-col gap-8 justify-center items-center w-md mx-auto">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">
-          Welcome to <span className="text-primary animate-pulse">Listen</span>
+        <h1 className="text-2xl font-bold tracking-wide">
+          Welcome to{' '}
+          <span className="text-primary italic font-thin tracking-wide animate-pulse">
+            Listen
+          </span>
         </h1>
         <p className="text-sm lg:text-base text-muted-foreground">
           Enter your email address or sign up with Google to get create an

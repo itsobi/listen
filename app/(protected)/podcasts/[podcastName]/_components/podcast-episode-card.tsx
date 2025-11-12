@@ -6,14 +6,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { formatDate } from '@/lib/helpers';
+import { api, internal } from '@/convex/_generated/api';
+import { formatDate, getEpisodeDuration } from '@/lib/helpers';
 import { ApplePodcastEpisode } from '@/lib/queries/apple/apple-types';
-import {
-  IconAppleFilled,
-  IconBrandApple,
-  IconBrandSpotify,
-} from '@tabler/icons-react';
-import { Check, Copy, Loader, Loader2, Sparkles } from 'lucide-react';
+import { IconBrandApple, IconBrandSpotify } from '@tabler/icons-react';
+import { useMutation, useQuery } from 'convex/react';
+import { Bot, Check } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -25,7 +24,7 @@ interface EpisodeActionsProps {
 function EpisodeActions({ appleLink, spotifyLink }: EpisodeActionsProps) {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
-  const handleCopy = async (provider: 'apple' | 'spotify', link: string) => {
+  const handleCopy = async (link: string) => {
     try {
       await navigator.clipboard.writeText(link);
       setCopiedUrl(link);
@@ -42,9 +41,9 @@ function EpisodeActions({ appleLink, spotifyLink }: EpisodeActionsProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            variant="outline"
             size={'sm'}
-            onClick={() => handleCopy('apple', appleLink)}
+            onClick={() => handleCopy(appleLink)}
           >
             {copiedUrl === appleLink ? <Check /> : <IconBrandApple />}
           </Button>
@@ -57,9 +56,9 @@ function EpisodeActions({ appleLink, spotifyLink }: EpisodeActionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
+              variant="outline"
               size={'sm'}
-              onClick={() => handleCopy('spotify', spotifyLink)}
+              onClick={() => handleCopy(spotifyLink)}
             >
               {copiedUrl === spotifyLink ? <Check /> : <IconBrandSpotify />}
             </Button>
@@ -85,13 +84,44 @@ export function PodcastEpisodeCard({
   previewUrl,
 }: PodcastEpisodeCardProps) {
   if (!episode) return null;
+  const { hours, minutes } = getEpisodeDuration(episode.trackTimeMillis);
+  const router = useRouter();
+  const agentAlreadyGenerated = useQuery(
+    api.agentsGenerated.agentAlreadyGenerated,
+    {
+      trackId: episode.trackId,
+    }
+  );
+  const generateListenAgent = useMutation(api.workflowTools.kickoffWorkflow);
+
+  const handleGenerateListenAgent = async () => {
+    if (agentAlreadyGenerated) {
+      router.push(`/listen-agent/${episode.trackId.toString()}`);
+      return;
+    }
+
+    generateListenAgent({
+      episodeTitle: episode.trackName,
+      episodeImageUrl: episode.artworkUrl600,
+      releaseDate: episode.releaseDate,
+      status: 'in-progress',
+      trackId: episode.trackId,
+      audioUrl: episode.episodeUrl,
+    });
+  };
 
   return (
     <div className="mt-5 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {formatDate(episode.releaseDate)}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">
+            {formatDate(episode.releaseDate)}
+          </p>
+          <span className="text-muted-foreground">•</span>
+          <p className="text-sm text-muted-foreground">
+            {hours > 0 ? `${hours}h` : ''} {minutes}m
+          </p>
+        </div>
         <EpisodeActions
           appleLink={episode.trackViewUrl}
           spotifyLink={spotifyLink}
@@ -105,15 +135,22 @@ export function PodcastEpisodeCard({
       <div className="flex items-center justify-between py-6">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" className="font-semibold">
-              <Sparkles className="animate-pulse" />
+            <Button
+              variant="outline"
+              className="font-semibold"
+              // onClick={() =>
+              //   router.push(`/listen-agent/${episode.trackId.toString()}`)
+              // }
+              onClick={handleGenerateListenAgent}
+            >
+              <Bot className="animate-pulse" />
               <span className="hidden lg:inline lg:animate-pulse">
-                Activate Listen Helper
+                Listen Agent
               </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="lg:hidden">
-            <p>Activate Listen Helper</p>
+            <p>Listen Agent</p>
           </TooltipContent>
         </Tooltip>
         {previewUrl ? (

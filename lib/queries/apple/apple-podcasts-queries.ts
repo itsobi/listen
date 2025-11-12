@@ -1,6 +1,6 @@
 import { QueryTags } from '@/lib/query-tags';
 
-export const getApplePodcast = async (podcastName: string) => {
+export const getApplePodcastByName = async (podcastName: string) => {
   try {
     const res = await fetch(
       `https://itunes.apple.com/search?term=${podcastName}}&media=podcast&limit=5`,
@@ -47,7 +47,7 @@ export const getApplePodcast = async (podcastName: string) => {
 
 export const getApplePodcastEpisodes = async (podcastName: string) => {
   try {
-    const data = await getApplePodcast(podcastName);
+    const data = await getApplePodcastByName(podcastName);
 
     // If no results, it doesn't exist
     if (!data.success) {

@@ -151,63 +151,8 @@ function ChannelStats({
 }
 
 function VideoCard({ video }: { video: YoutubeVideo }) {
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return (
-      <div className="flex flex-col items-start w-full border rounded-lg p-4 shadow-sm">
-        {video.snippet.thumbnails?.high?.url ? (
-          <img
-            src={video.snippet.thumbnails?.high?.url}
-            alt={video.snippet.title}
-            className="w-full aspect-[16/9] object-cover rounded-lg bg-muted"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <TvMinimalPlay className="w-full h-40 object-cover rounded-lg" />
-        )}
-
-        <div className="mt-4 space-y-2 flex-1">
-          <h4 className="font-semibold">
-            {decodeHtmlEntities(video.snippet.title)}
-          </h4>
-          <p className="text-sm text-muted-foreground line-clamp-3">
-            {decodeHtmlEntities(video.snippet.description)}
-          </p>
-        </div>
-        <div className="flex items-center justify-between w-full mt-4">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <Calendar className="size-4" />{' '}
-            {formatDate(video.snippet.publishedAt)}
-          </p>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-primary text-primary-foreground"
-              >
-                <ExternalLink className="size-4" />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Watch video</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <Link
-      href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex flex-col items-start w-full border rounded-lg p-4 shadow-sm hover:bg-muted-foreground/10"
-    >
+    <div className="flex flex-col items-start w-full border rounded-lg p-4 shadow-sm">
       {video.snippet.thumbnails?.high?.url ? (
         <img
           src={video.snippet.thumbnails?.high?.url}
@@ -227,10 +172,29 @@ function VideoCard({ video }: { video: YoutubeVideo }) {
           {decodeHtmlEntities(video.snippet.description)}
         </p>
       </div>
-      <p className="text-sm text-muted-foreground flex items-center gap-2 mt-4">
-        <Calendar className="size-4" /> {formatDate(video.snippet.publishedAt)}
-      </p>
-    </Link>
+      <div className="flex items-center justify-between w-full mt-4">
+        <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <Calendar className="size-4" />{' '}
+          {formatDate(video.snippet.publishedAt)}
+        </p>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg"
+            >
+              <ExternalLink className="size-4 hover:text-primary/80" />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Watch video</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </div>
   );
 }
 

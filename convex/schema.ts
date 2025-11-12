@@ -26,4 +26,32 @@ export default defineSchema({
       })
     ),
   }).index('by_user_id', ['user_id']),
+  agentTranscripts: defineTable({
+    trackId: v.number(),
+    storageId: v.id('_storage'),
+  }),
+  agentsGenerated: defineTable({
+    user_id: v.string(),
+    episodes: v.array(
+      v.object({
+        trackId: v.number(),
+        episodeTitle: v.string(),
+        episodeImageUrl: v.optional(v.string()),
+        releaseDate: v.string(),
+        status: v.union(
+          v.literal('pending'),
+          v.literal('in-progress'),
+          v.literal('completed')
+        ),
+        createdAt: v.number(),
+      })
+    ),
+  }).index('by_user_id', ['user_id']),
+  notifications: defineTable({
+    user_id: v.string(),
+    trackId: v.number(),
+    type: v.string(),
+    read: v.boolean(),
+    episodeTitle: v.string(),
+  }).index('by_user_id', ['user_id']),
 });

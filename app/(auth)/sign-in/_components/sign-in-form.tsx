@@ -88,8 +88,7 @@ export default function SignInForm({ verifying, setVerifying }: Props) {
       }),
       {
         loading: 'Signing in with Google...',
-        success:
-          'Signed in successfully. We are redirecting you to the home screen...',
+        success: 'Signed in successfully, redirecting to the home screen...',
         error: (error) => {
           if (isClerkAPIResponseError(error)) setErrors(error.errors);
           return error instanceof Error
@@ -105,7 +104,7 @@ export default function SignInForm({ verifying, setVerifying }: Props) {
   return (
     <div className="flex flex-col gap-8 justify-center items-center w-md mx-auto">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">Welcome Back!</h1>
+        <h1 className="text-2xl font-bold tracking-wide">Welcome Back!</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full">

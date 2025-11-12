@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/sidebar';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { HomeIcon, SettingsIcon, VideoIcon } from 'lucide-react';
+import { Bot, HomeIcon, SettingsIcon, VideoIcon } from 'lucide-react';
 
 const navMain = [
   {
@@ -17,6 +17,12 @@ const navMain = [
     title: 'Home',
     url: '/home',
     icon: HomeIcon,
+  },
+  {
+    id: 'listen-agent',
+    title: 'Listen Agent',
+    url: '/listen-agent',
+    icon: Bot,
   },
   {
     id: 'preferences',
@@ -41,7 +47,7 @@ export function SidebarNavMain() {
     <SidebarGroup>
       <SidebarMenu>
         {navMain.map((item) => {
-          const isActive = pathname === item.url;
+          const isActive = pathname.includes(item.url);
           const Icon = item.icon;
           return (
             <SidebarMenuItem key={item.id}>
