@@ -1,7 +1,7 @@
 ## ✨ To Do
 
-- **Include description in agentsGenerated**
+- **Add description into context for agent**
 - **Persist chat messages**
-- **User billing**
+- **User Restriction (Agents generated/messages)**
 - **Rate limiting**
 - **Create video**
