@@ -10,59 +10,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-const dummyMessages = [
-  {
-    id: '1',
-    role: 'user',
-    content: 'Hello, how are you?',
-  },
-  //   {
-  //     id: '2',
-  //     role: 'assistant',
-  //     content: 'I am good, thank you!',
-  //   },
-  //   {
-  //     id: '3',
-  //     role: 'user',
-  //     content: 'What is your name?',
-  //   },
-  //   {
-  //     id: '4',
-  //     role: 'assistant',
-  //     content: 'My name is John Doe.',
-  //   },
-  //   {
-  //     id: '5',
-  //     role: 'user',
-  //     content: 'What is your favorite color?',
-  //   },
-  //   {
-  //     id: '6',
-  //     role: 'assistant',
-  //     content: 'My favorite color is blue.',
-  //   },
-  //   {
-  //     id: '7',
-  //     role: 'user',
-  //     content: 'What is your favorite food?',
-  //   },
-  //   {
-  //     id: '8',
-  //     role: 'assistant',
-  //     content: 'My favorite food is pizza.',
-  //   },
-  //   {
-  //     id: '9',
-  //     role: 'user',
-  //     content: 'What is your favorite animal?',
-  //   },
-  //   {
-  //     id: '10',
-  //     role: 'assistant',
-  //     content: 'My favorite animal is a dog.',
-  //   },
-];
-
 interface Props {
   trackId: string;
   transcriptUrl: string | false | null | undefined;
@@ -204,7 +151,7 @@ export function Chat({
           placeholder="Ask me anything about this episode…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          // disabled={status === "loading"}
+          disabled={status !== 'ready'}
           className="flex-1 border-none outline-none"
           autoComplete="off"
         />
