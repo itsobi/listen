@@ -138,9 +138,6 @@ export function PodcastEpisodeCard({
             <Button
               variant="outline"
               className="font-semibold"
-              // onClick={() =>
-              //   router.push(`/listen-agent/${episode.trackId.toString()}`)
-              // }
               onClick={handleGenerateListenAgent}
             >
               <Bot className="animate-pulse" />

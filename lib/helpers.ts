@@ -130,3 +130,13 @@ export function getEpisodeDuration(ms: number): {
 
   return { hours, minutes };
 }
+
+export const generateChatKey = ({
+  userId,
+  trackId,
+}: {
+  userId: string;
+  trackId: string;
+}) => {
+  return `${userId}-${trackId}`;
+};

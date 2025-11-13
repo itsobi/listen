@@ -50,9 +50,7 @@ export const createVideoPreference = mutation({
   handler: async (ctx, args) => {
     try {
       const user = await ctx.auth.getUserIdentity();
-      if (!user) {
-        return { success: false, message: 'Unauthorized' };
-      }
+      if (!user) throw new Error('Not authorized');
 
       await ctx.db.insert('videoPreferences', {
         user_id: user.subject,
@@ -94,9 +92,7 @@ export const updateVideoPreferences = mutation({
   handler: async (ctx, args) => {
     try {
       const user = await ctx.auth.getUserIdentity();
-      if (!user) {
-        return { success: false, message: 'Unauthorized' };
-      }
+      if (!user) throw new Error('Not authorized');
 
       const updates: { providers?: string[]; channels?: any[] } = {};
 

@@ -1,3 +1,6 @@
+import { PageHeading } from '@/components/global/page-heading';
+import { ChatView } from '../_components/chat-view';
+
 export default async function ListenAgentChat({
   params,
 }: {
@@ -5,5 +8,11 @@ export default async function ListenAgentChat({
 }) {
   const { trackId } = await params;
 
-  return <div>TrackId: {trackId}</div>;
+  return (
+    <>
+      <PageHeading title="Chat" />
+
+      <ChatView trackId={trackId} />
+    </>
+  );
 }

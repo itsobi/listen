@@ -29,7 +29,7 @@ export default defineSchema({
   agentTranscripts: defineTable({
     trackId: v.number(),
     storageId: v.id('_storage'),
-  }),
+  }).index('by_track_id', ['trackId']),
   agentsGenerated: defineTable({
     user_id: v.string(),
     episodes: v.array(
@@ -54,4 +54,14 @@ export default defineSchema({
     read: v.boolean(),
     episodeTitle: v.string(),
   }).index('by_user_id', ['user_id']),
+  messages: defineTable({
+    chatKey: v.string(),
+    messages: v.array(
+      v.object({
+        role: v.union(v.literal('user'), v.literal('assistant')),
+        content: v.string(),
+        createdAt: v.number(),
+      })
+    ),
+  }).index('by_chat_key', ['chatKey']),
 });

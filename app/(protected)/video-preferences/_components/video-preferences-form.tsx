@@ -25,7 +25,7 @@ import {
 import { Loader, SendHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { cn, generateRandomColor } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LoadingScreen } from '@/components/global/loading-screen';

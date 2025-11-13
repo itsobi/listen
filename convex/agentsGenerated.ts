@@ -6,7 +6,7 @@ export const getAgentsGenerated = query({
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
 
-    if (!user) return;
+    if (!user) return null;
 
     const userAgents = await ctx.db
       .query('agentsGenerated')
@@ -27,7 +27,7 @@ export const agentAlreadyGenerated = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
-    if (!user) return false;
+    if (!user) throw new Error('Unauthorized');
 
     const userAgents = await ctx.db
       .query('agentsGenerated')

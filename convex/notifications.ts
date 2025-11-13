@@ -10,7 +10,7 @@ export const createNotification = internalMutation({
     episodeTitle: v.string(),
   },
   handler: async (ctx, args) => {
-    if (!args.userId) throw new Error('Not authorized');
+    if (!args.userId) throw new Error('User ID is required');
 
     await ctx.db.insert('notifications', {
       user_id: args.userId,
@@ -27,7 +27,7 @@ export const getNotifications = query({
   handler: async (ctx) => {
     try {
       const user = await ctx.auth.getUserIdentity();
-      if (!user) throw new Error('Not authorized');
+      if (!user) return null;
 
       const notifications = await ctx.db
         .query('notifications')
@@ -48,6 +48,9 @@ export const markNotificationAsRead = mutation({
     notificationId: v.id('notifications'),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) throw new Error('Not authorized');
+
     await ctx.db.patch(args.notificationId, { read: true });
   },
 });

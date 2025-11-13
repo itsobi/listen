@@ -7,7 +7,7 @@ export const getWorkflowStatus = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
-    if (!user) throw new Error('Not authorized');
+    if (!user) return null;
 
     const userAgents = await ctx.db
       .query('agentsGenerated')

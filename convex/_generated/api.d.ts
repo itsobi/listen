@@ -8,7 +8,10 @@
  * @module
  */
 
+import type * as agentTranscripts from "../agentTranscripts.js";
 import type * as agentsGenerated from "../agentsGenerated.js";
+import type * as chat from "../chat.js";
+import type * as http from "../http.js";
 import type * as index from "../index.js";
 import type * as notifications from "../notifications.js";
 import type * as preferences from "../preferences.js";
@@ -31,7 +34,10 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  agentTranscripts: typeof agentTranscripts;
   agentsGenerated: typeof agentsGenerated;
+  chat: typeof chat;
+  http: typeof http;
   index: typeof index;
   notifications: typeof notifications;
   preferences: typeof preferences;

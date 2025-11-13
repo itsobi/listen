@@ -5,8 +5,9 @@ import { api } from '@/convex/_generated/api';
 import { formatDate } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { useQuery } from 'convex/react';
-import { Bot, BotIcon, MessageCircleIcon } from 'lucide-react';
+import { MessageCircleIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 
 type AgentGenerated = {
   trackId: number;
@@ -24,8 +25,9 @@ const statusColor = {
 
 function ListenAgentCard({ agent }: { agent: AgentGenerated }) {
   const { theme } = useTheme();
+  const router = useRouter();
   return (
-    <div className="light:border dark:border-b rounded-sm shadow-sm p-4 space-y-4">
+    <div className="border-b p-4 space-y-4">
       <div className="flex items-center gap-2">
         <img
           src={agent.episodeImageUrl}
@@ -38,7 +40,7 @@ function ListenAgentCard({ agent }: { agent: AgentGenerated }) {
       </div>
 
       <div className="space-y-1">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Status:{' '}
           <span
             className={cn(
@@ -50,13 +52,16 @@ function ListenAgentCard({ agent }: { agent: AgentGenerated }) {
             {agent.status}
           </span>
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Generated on: {formatDate(agent.releaseDate)}
         </p>
       </div>
 
       <div className="flex justify-end">
-        <Button variant={theme === 'dark' ? 'outline' : 'default'}>
+        <Button
+          onClick={() => router.push(`/listen-agent/${agent.trackId}`)}
+          variant={theme === 'dark' ? 'outline' : 'default'}
+        >
           <MessageCircleIcon /> Chat with Listen Agent
         </Button>
       </div>

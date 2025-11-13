@@ -29,9 +29,7 @@ export const createPreference = mutation({
   handler: async (ctx, args) => {
     try {
       const user = await ctx.auth.getUserIdentity();
-      if (!user) {
-        return { success: false, message: 'Unauthorized' };
-      }
+      if (!user) throw new Error('Not authorized');
 
       await ctx.db.insert('preferences', {
         user_id: user.subject,
