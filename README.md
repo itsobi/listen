@@ -1,6 +1,6 @@
 ## ✨ To Do
 
-- **Add description into context for agent**
+- **Handle failed agents in listen agent card**
 - **Persist chat messages**
 - **User Restriction (Agents generated/messages)**
 - **Rate limiting**
