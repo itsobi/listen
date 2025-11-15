@@ -22,13 +22,15 @@ export async function PodcastEpisodes({ name }: { name: string }) {
     message: spotifyMessage,
   } = await getSpotifyEpisodes(podcastName);
 
-  if (!appleSuccess || !spotifySuccess) {
+  if (!appleSuccess) {
     return (
-      <ErrorState
-        heading="Error"
-        description={appleMessage || spotifyMessage}
-        goBack={true}
-      />
+      <ErrorState heading="Error" description={appleMessage} goBack={true} />
+    );
+  }
+
+  if (!spotifySuccess) {
+    return (
+      <ErrorState heading="Error" description={spotifyMessage} goBack={true} />
     );
   }
   return (

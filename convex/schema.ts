@@ -36,13 +36,15 @@ export default defineSchema({
       v.object({
         trackId: v.number(),
         episodeTitle: v.string(),
+        episodeDescription: v.string(),
         episodeImageUrl: v.optional(v.string()),
         releaseDate: v.string(),
         status: v.union(
-          v.literal('pending'),
           v.literal('in-progress'),
-          v.literal('completed')
+          v.literal('completed'),
+          v.literal('failed')
         ),
+        errorMessage: v.optional(v.string()),
         createdAt: v.number(),
       })
     ),
@@ -54,11 +56,16 @@ export default defineSchema({
     read: v.boolean(),
     episodeTitle: v.string(),
   }).index('by_user_id', ['user_id']),
-  messages: defineTable({
+  chats: defineTable({
     chatKey: v.string(),
     messages: v.array(
       v.object({
-        role: v.union(v.literal('user'), v.literal('assistant')),
+        id: v.string(),
+        role: v.union(
+          v.literal('user'),
+          v.literal('assistant'),
+          v.literal('system')
+        ),
         content: v.string(),
         createdAt: v.number(),
       })

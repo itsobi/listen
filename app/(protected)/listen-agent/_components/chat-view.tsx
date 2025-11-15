@@ -39,8 +39,6 @@ export function NoTranscriptFound() {
 }
 
 export function ChatView({ trackId }: { trackId: string }) {
-  const router = useRouter();
-
   const agentTranscript = useQuery(api.agentTranscripts.getAgentTranscript, {
     trackId: parseInt(trackId), // the trackId is a number from apple api, so we need to parse it to an integer
   });
@@ -58,6 +56,7 @@ export function ChatView({ trackId }: { trackId: string }) {
       transcriptUrl={agentTranscript.transcriptUrl}
       trackId={trackId}
       episodeTitle={agentTranscript.episodeTitle}
+      episodeDescription={agentTranscript.episodeDescription}
       episodeImageUrl={agentTranscript.episodeImageUrl}
       agentStatus={agentTranscript.agentStatus}
     />

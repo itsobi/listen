@@ -32,6 +32,7 @@ export const getAgentTranscript = query({
         return {
           transcriptUrl,
           episodeTitle: episode?.episodeTitle,
+          episodeDescription: episode?.episodeDescription,
           episodeImageUrl: episode?.episodeImageUrl,
           agentStatus: episode?.status,
         };

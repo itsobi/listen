@@ -1,36 +1,87 @@
 import { v } from 'convex/values';
 import { workflow } from '.';
 import {
+  action,
   internalAction,
   internalMutation,
   mutation,
 } from './_generated/server';
 import { experimental_transcribe as transcribe } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { OpenAI } from 'openai';
 import { api, internal } from './_generated/api';
+import { AgentStatus } from '@/lib/helpers';
 
-export const transcribeAudio = internalAction({
-  args: { audioUrl: v.string(), trackId: v.number() },
-  handler: async (ctx, args) => {
-    if (!args.audioUrl) throw new Error('Audio URL is required');
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-    const response = await fetch(args.audioUrl);
+// export const transcribeAudio = internalAction({
+//   args: { userId: v.string(), audioUrl: v.string(), trackId: v.number() },
+//   handler: async (ctx, args) => {
+//     try {
+//       if (!args.audioUrl) throw new Error('Audio URL is required');
 
-    if (!response.ok) throw new Error('Failed to fetch audio');
+//       const response = await fetch(args.audioUrl);
 
-    const audioBuffer = await response.arrayBuffer();
+//       if (!response.ok) {
+//         await ctx.runMutation(internal.workflowTools.updateAgentStatus, {
+//           userId: args.userId,
+//           trackId: args.trackId,
+//           status: AgentStatus.FAILED,
+//           errorMessage: response.statusText,
+//         });
+//         throw new Error(response.statusText);
+//       }
 
-    const { text: transcription } = await transcribe({
-      model: openai.transcription('whisper-1'),
-      audio: audioBuffer,
-    });
+//       // Check content length early
+//       const contentLength = response.headers.get('content-length');
+//       if (contentLength && parseInt(contentLength, 10) > 25 * 1024 * 1024) {
+//         throw new Error('Audio file exceeds 25 MB limit for Whisper API');
+//       }
 
-    const file = new File([transcription], 'transcription.txt', {
-      type: 'text/plain',
-    });
-    const storageId = await ctx.storage.store(file);
+//       if (!response.body) {
+//         throw new Error('Response body is empty');
+//       }
 
-    return storageId;
+//       // Convert response to buffer
+//       const arrayBuffer = await response.arrayBuffer();
+
+//       // Create a File from the buffer
+//       const file = new File([arrayBuffer], 'audio', {
+//         type: response.headers.get('content-type') || 'audio/mpeg',
+//       });
+
+//       const { text } = await openai.audio.transcriptions.create({
+//         file,
+//         model: 'whisper-1',
+//       });
+
+//       const transcriptionFile = new File([text], 'transcription.txt', {
+//         type: 'text/plain',
+//       });
+
+//       const storageId = await ctx.storage.store(transcriptionFile);
+
+//       return storageId;
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   },
+// });
+
+export const transcribeAudioInternalAction = internalAction({
+  args: { userId: v.string(), audioUrl: v.string(), trackId: v.number() },
+  handler: async (ctx, args): Promise<string> => {
+    const storageId = await ctx.runAction(
+      api.transcribeAudio.transcribeAudioAction,
+      {
+        userId: args.userId,
+        audioUrl: args.audioUrl,
+        trackId: args.trackId,
+      }
+    );
+
+    return storageId!;
   },
 });
 
@@ -38,8 +89,18 @@ export const createAgentTranscript = internalMutation({
   args: {
     trackId: v.number(),
     storageId: v.id('_storage'),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
+    if (!args.storageId) {
+      await ctx.runMutation(internal.workflowTools.updateAgentStatus, {
+        userId: args.userId,
+        trackId: args.trackId,
+        status: AgentStatus.FAILED,
+        errorMessage: 'Unable to transcribe audio',
+      });
+      throw new Error('Unable to transcribe audio');
+    }
     const transcriptId = await ctx.db.insert('agentTranscripts', {
       trackId: args.trackId,
       storageId: args.storageId,
@@ -48,18 +109,14 @@ export const createAgentTranscript = internalMutation({
   },
 });
 
-export const updateAgentStatus = internalMutation({
+export const initializeAgentForUser = internalMutation({
   args: {
     userId: v.string(),
     trackId: v.number(),
     episodeTitle: v.string(),
+    episodeDescription: v.string(),
     episodeImageUrl: v.optional(v.string()),
     releaseDate: v.string(),
-    status: v.union(
-      v.literal('pending'),
-      v.literal('in-progress'),
-      v.literal('completed')
-    ),
   },
   handler: async (ctx, args) => {
     if (!args.userId) throw new Error('Not authorized');
@@ -76,9 +133,10 @@ export const updateAgentStatus = internalMutation({
           {
             trackId: args.trackId,
             episodeTitle: args.episodeTitle,
+            episodeDescription: args.episodeDescription,
             episodeImageUrl: args.episodeImageUrl,
             releaseDate: args.releaseDate,
-            status: args.status,
+            status: 'in-progress' as const,
             createdAt: Date.now(),
           },
         ],
@@ -97,9 +155,10 @@ export const updateAgentStatus = internalMutation({
         {
           trackId: args.trackId,
           episodeTitle: args.episodeTitle,
+          episodeDescription: args.episodeDescription,
           episodeImageUrl: args.episodeImageUrl,
           releaseDate: args.releaseDate,
-          status: args.status,
+          status: 'in-progress' as const,
           createdAt: Date.now(),
         },
       ];
@@ -109,17 +168,6 @@ export const updateAgentStatus = internalMutation({
       });
       return;
     }
-
-    // update agent status for the given track id
-    const updatedEpisodes = userAgents.episodes.map((episode) =>
-      episode.trackId === args.trackId
-        ? { ...episode, status: args.status }
-        : episode
-    );
-
-    await ctx.db.patch(userAgents._id, {
-      episodes: updatedEpisodes,
-    });
   },
 });
 
@@ -128,9 +176,9 @@ export const updateAgentTranscript = internalMutation({
     userId: v.string(),
     trackId: v.number(),
     status: v.union(
-      v.literal('pending'),
       v.literal('in-progress'),
-      v.literal('completed')
+      v.literal('completed'),
+      v.literal('failed')
     ),
   },
   handler: async (ctx, args) => {
@@ -158,11 +206,44 @@ export const updateAgentTranscript = internalMutation({
   },
 });
 
+export const updateAgentStatus = internalMutation({
+  args: {
+    userId: v.string(),
+    trackId: v.number(),
+    status: v.union(
+      v.literal('in-progress'),
+      v.literal('completed'),
+      v.literal('failed')
+    ),
+    errorMessage: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (!args.userId) throw new Error('Not authorized');
+
+    const userAgents = await ctx.db
+      .query('agentsGenerated')
+      .withIndex('by_user_id', (q) => q.eq('user_id', args.userId))
+      .first();
+
+    if (!userAgents) throw new Error('User has no agents generated');
+
+    const updatedEpisodes = userAgents.episodes.map((episode) =>
+      episode.trackId === args.trackId
+        ? { ...episode, status: args.status, errorMessage: args.errorMessage }
+        : episode
+    );
+
+    await ctx.db.patch(userAgents._id, {
+      episodes: updatedEpisodes,
+    });
+  },
+});
 export const kickoffWorkflow = mutation({
   args: {
     trackId: v.number(),
     audioUrl: v.string(),
     episodeTitle: v.string(),
+    episodeDescription: v.string(),
     episodeImageUrl: v.optional(v.string()),
     releaseDate: v.string(),
     status: v.string(),
@@ -191,6 +272,7 @@ export const kickoffWorkflow = mutation({
         trackId: args.trackId,
         audioUrl: args.audioUrl,
         episodeTitle: args.episodeTitle,
+        episodeDescription: args.episodeDescription,
         episodeImageUrl: args.episodeImageUrl,
         releaseDate: args.releaseDate,
         status: args.status,

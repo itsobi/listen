@@ -140,3 +140,9 @@ export const generateChatKey = ({
 }) => {
   return `${userId}-${trackId}`;
 };
+
+export enum AgentStatus {
+  IN_PROGRESS = 'in-progress',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}

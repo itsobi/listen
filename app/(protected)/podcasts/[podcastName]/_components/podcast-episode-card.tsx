@@ -100,14 +100,16 @@ export function PodcastEpisodeCard({
       return;
     }
 
-    generateListenAgent({
+    await generateListenAgent({
       episodeTitle: episode.trackName,
+      episodeDescription: episode.description,
       episodeImageUrl: episode.artworkUrl600,
       releaseDate: episode.releaseDate,
       status: 'in-progress',
       trackId: episode.trackId,
       audioUrl: episode.episodeUrl,
     });
+    router.push(`/listen-agent`);
   };
 
   return (

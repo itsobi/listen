@@ -1,7 +1,9 @@
 import { WorkflowManager } from '@convex-dev/workflow';
-import { components, internal } from './_generated/api';
+import { api, components, internal } from './_generated/api';
 import { v } from 'convex/values';
 import { NOTIFICATION_TYPES } from '@/components/sidebar/notifications';
+import { AgentStatus } from '@/lib/helpers';
+import { Id } from './_generated/dataModel';
 
 export const workflow = new WorkflowManager(components.workflow);
 
@@ -11,6 +13,7 @@ export const listenAgentWorkflow = workflow.define({
     trackId: v.number(),
     audioUrl: v.string(),
     episodeTitle: v.string(),
+    episodeDescription: v.string(),
     episodeImageUrl: v.optional(v.string()),
     releaseDate: v.string(),
     status: v.string(),
@@ -22,28 +25,40 @@ export const listenAgentWorkflow = workflow.define({
     }
 
     // Step 1: Update status to "in-progress"
-    await step.runMutation(internal.workflowTools.updateAgentStatus, {
+    await step.runMutation(internal.workflowTools.initializeAgentForUser, {
       userId: args.userId,
       trackId: args.trackId,
       episodeTitle: args.episodeTitle,
+      episodeDescription: args.episodeDescription,
       episodeImageUrl: args.episodeImageUrl,
       releaseDate: args.releaseDate,
-      status: 'in-progress',
     });
 
-    // Step 2: Transcribe the audio
+    // step 2: transcribe audio
     const storageId = await step.runAction(
-      internal.workflowTools.transcribeAudio,
+      internal.workflowTools.transcribeAudioInternalAction,
       {
+        userId: args.userId,
         audioUrl: args.audioUrl,
         trackId: args.trackId,
       }
     );
 
+    if (!storageId) {
+      await step.runMutation(internal.workflowTools.updateAgentStatus, {
+        userId: args.userId,
+        trackId: args.trackId,
+        status: AgentStatus.FAILED,
+        errorMessage: 'Unable to transcribe audio',
+      });
+      throw new Error('Unable to transcribe audio');
+    }
+
     // Step 3: Create the transcript record
     await step.runMutation(internal.workflowTools.createAgentTranscript, {
       trackId: args.trackId,
-      storageId: storageId,
+      storageId: storageId as Id<'_storage'>,
+      userId: args.userId,
     });
 
     // Step 4: Update the episode with completed status

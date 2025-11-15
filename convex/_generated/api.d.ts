@@ -10,11 +10,12 @@
 
 import type * as agentTranscripts from "../agentTranscripts.js";
 import type * as agentsGenerated from "../agentsGenerated.js";
-import type * as chat from "../chat.js";
-import type * as http from "../http.js";
+import type * as chats from "../chats.js";
 import type * as index from "../index.js";
 import type * as notifications from "../notifications.js";
 import type * as preferences from "../preferences.js";
+import type * as tools from "../tools.js";
+import type * as transcribeAudio from "../transcribeAudio.js";
 import type * as videoPreferences from "../videoPreferences.js";
 import type * as workflowStatus from "../workflowStatus.js";
 import type * as workflowTools from "../workflowTools.js";
@@ -36,11 +37,12 @@ import type {
 declare const fullApi: ApiFromModules<{
   agentTranscripts: typeof agentTranscripts;
   agentsGenerated: typeof agentsGenerated;
-  chat: typeof chat;
-  http: typeof http;
+  chats: typeof chats;
   index: typeof index;
   notifications: typeof notifications;
   preferences: typeof preferences;
+  tools: typeof tools;
+  transcribeAudio: typeof transcribeAudio;
   videoPreferences: typeof videoPreferences;
   workflowStatus: typeof workflowStatus;
   workflowTools: typeof workflowTools;
