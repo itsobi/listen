@@ -6,7 +6,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { api, internal } from '@/convex/_generated/api';
+import { api } from '@/convex/_generated/api';
+import { checkProPlanStatus } from '@/lib/actions';
 import { formatDate, getEpisodeDuration } from '@/lib/helpers';
 import { ApplePodcastEpisode } from '@/lib/queries/apple/apple-types';
 import { IconBrandApple, IconBrandSpotify } from '@tabler/icons-react';
@@ -95,8 +96,16 @@ export function PodcastEpisodeCard({
   const generateListenAgent = useMutation(api.workflowTools.kickoffWorkflow);
 
   const handleGenerateListenAgent = async () => {
-    if (agentAlreadyGenerated) {
+    if (agentAlreadyGenerated?.isAlreadyGenerated) {
       router.push(`/listen-agent/${episode.trackId.toString()}`);
+      return;
+    }
+
+    const isOnProPlan = await checkProPlanStatus();
+    if (!isOnProPlan && (agentAlreadyGenerated?.agentCount ?? 0) >= 1) {
+      toast.error(
+        'Sorry, you must be on the Pro plan to generate more Listen Agents.'
+      );
       return;
     }
 

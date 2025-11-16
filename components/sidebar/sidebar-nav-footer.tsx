@@ -13,11 +13,13 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { SignOutButton, useUser } from '@clerk/nextjs';
-import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { ChevronsUpDown, LogOut, User } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 export function SidebarNavFooter() {
   const { user } = useUser();
+  const router = useRouter();
   return (
     <SidebarFooter className="p-4">
       <SidebarMenu>
@@ -60,6 +62,18 @@ export function SidebarNavFooter() {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="m-2">
+                <DropdownMenuItem asChild>
+                  <button onClick={() => router.push('/user-profile')}>
+                    <div className="flex items-center gap-2 w-full cursor-pointer">
+                      <User
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Manage Account
+                    </div>
+                  </button>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <SignOutButton>
                     <div className="flex items-center gap-2 w-full cursor-pointer">

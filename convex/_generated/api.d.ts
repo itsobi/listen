@@ -17,7 +17,6 @@ import type * as preferences from "../preferences.js";
 import type * as tools from "../tools.js";
 import type * as transcribeAudio from "../transcribeAudio.js";
 import type * as videoPreferences from "../videoPreferences.js";
-import type * as workflowStatus from "../workflowStatus.js";
 import type * as workflowTools from "../workflowTools.js";
 
 import type {
@@ -44,7 +43,6 @@ declare const fullApi: ApiFromModules<{
   tools: typeof tools;
   transcribeAudio: typeof transcribeAudio;
   videoPreferences: typeof videoPreferences;
-  workflowStatus: typeof workflowStatus;
   workflowTools: typeof workflowTools;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

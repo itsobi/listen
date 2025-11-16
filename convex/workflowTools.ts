@@ -1,77 +1,19 @@
 import { v } from 'convex/values';
 import { workflow } from '.';
 import {
-  action,
   internalAction,
   internalMutation,
+  internalQuery,
   mutation,
 } from './_generated/server';
-import { experimental_transcribe as transcribe } from 'ai';
-import { OpenAI } from 'openai';
+
 import { api, internal } from './_generated/api';
 import { AgentStatus } from '@/lib/helpers';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// export const transcribeAudio = internalAction({
-//   args: { userId: v.string(), audioUrl: v.string(), trackId: v.number() },
-//   handler: async (ctx, args) => {
-//     try {
-//       if (!args.audioUrl) throw new Error('Audio URL is required');
-
-//       const response = await fetch(args.audioUrl);
-
-//       if (!response.ok) {
-//         await ctx.runMutation(internal.workflowTools.updateAgentStatus, {
-//           userId: args.userId,
-//           trackId: args.trackId,
-//           status: AgentStatus.FAILED,
-//           errorMessage: response.statusText,
-//         });
-//         throw new Error(response.statusText);
-//       }
-
-//       // Check content length early
-//       const contentLength = response.headers.get('content-length');
-//       if (contentLength && parseInt(contentLength, 10) > 25 * 1024 * 1024) {
-//         throw new Error('Audio file exceeds 25 MB limit for Whisper API');
-//       }
-
-//       if (!response.body) {
-//         throw new Error('Response body is empty');
-//       }
-
-//       // Convert response to buffer
-//       const arrayBuffer = await response.arrayBuffer();
-
-//       // Create a File from the buffer
-//       const file = new File([arrayBuffer], 'audio', {
-//         type: response.headers.get('content-type') || 'audio/mpeg',
-//       });
-
-//       const { text } = await openai.audio.transcriptions.create({
-//         file,
-//         model: 'whisper-1',
-//       });
-
-//       const transcriptionFile = new File([text], 'transcription.txt', {
-//         type: 'text/plain',
-//       });
-
-//       const storageId = await ctx.storage.store(transcriptionFile);
-
-//       return storageId;
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   },
-// });
+import { Id } from './_generated/dataModel';
 
 export const transcribeAudioInternalAction = internalAction({
   args: { userId: v.string(), audioUrl: v.string(), trackId: v.number() },
-  handler: async (ctx, args): Promise<string> => {
+  handler: async (ctx, args): Promise<Id<'_storage'> | undefined> => {
     const storageId = await ctx.runAction(
       api.transcribeAudio.transcribeAudioAction,
       {
@@ -81,7 +23,7 @@ export const transcribeAudioInternalAction = internalAction({
       }
     );
 
-    return storageId!;
+    return storageId;
   },
 });
 
@@ -281,5 +223,21 @@ export const kickoffWorkflow = mutation({
 
     await workflow.cleanup(ctx, workflowId);
     return workflowId;
+  },
+});
+
+export const checkIfTranscriptExists = internalQuery({
+  args: {
+    trackId: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const transcript = await ctx.db
+      .query('agentTranscripts')
+      .withIndex('by_track_id', (q) => q.eq('trackId', args.trackId))
+      .first();
+
+    if (transcript?.storageId) return transcript.storageId;
+
+    return false;
   },
 });

@@ -37,6 +37,8 @@ import { api } from '@/convex/_generated/api';
 import { LoadingScreen } from '@/components/global/loading-screen';
 import { Podcast, usePreferencesStore } from '@/lib/store';
 import { Id } from '@/convex/_generated/dataModel';
+import { checkProPlanStatus } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   podcasts: z.array(z.string()).min(1, 'Please add at least one podcast'),
@@ -50,6 +52,7 @@ export function PreferencesForm() {
   const [showDialog, setShowDialog] = useState(false);
   const [isLoadingFormState, setIsLoadingFormState] = useState(false);
   const { setPodcasts } = usePreferencesStore();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -110,6 +113,17 @@ export function PreferencesForm() {
   const onSubmit = async (data: FormValues) => {
     setIsLoadingFormState(true);
     try {
+      const isOnProPlan = await checkProPlanStatus();
+
+      if (!isOnProPlan && (preferences?.podcasts?.length || 0) >= 2) {
+        toast.error(
+          'Sorry, you must be on the Pro plan to track more podcasts.'
+        );
+        setIsLoadingFormState(false);
+        router.push('/pricing');
+        return;
+      }
+
       const originalPodcastNames =
         preferences?.podcasts.map((p) => p.name) || [];
       const podcastsChanged =

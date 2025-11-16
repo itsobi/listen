@@ -34,10 +34,20 @@ export const agentAlreadyGenerated = query({
       .withIndex('by_user_id', (q) => q.eq('user_id', user.subject))
       .first();
 
-    if (!userAgents) return false;
+    if (!userAgents) {
+      return {
+        isAlreadyGenerated: false,
+        agentCount: 0,
+      };
+    }
 
-    return userAgents.episodes.some(
+    const isAlreadyGenerated = userAgents.episodes.some(
       (episode) => episode.trackId === args.trackId
     );
+
+    return {
+      isAlreadyGenerated,
+      agentCount: userAgents.episodes.length,
+    };
   },
 });

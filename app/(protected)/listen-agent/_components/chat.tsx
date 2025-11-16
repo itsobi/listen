@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { checkProPlanStatus } from '@/lib/actions';
 
 interface Props {
   trackId: string;
@@ -56,11 +57,24 @@ export function Chat({
     }),
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!userId || !input) return;
 
     if (status !== 'ready') {
       toast.error('Agent is not ready yet.');
+      return;
+    }
+
+    const isOnProPlan = await checkProPlanStatus();
+
+    const userMessageCount = allMessages.filter(
+      (m) => m.role === 'user'
+    ).length;
+
+    if (!isOnProPlan && userMessageCount >= 2) {
+      toast.error(
+        'Sorry, you must be on the Pro plan to continue to use this Listen Agent.'
+      );
       return;
     }
 
@@ -147,7 +161,7 @@ export function Chat({
         />
         <p className="text-sm lg:text-lg font-semibold">{episodeTitle}</p>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 py-10 space-y-8">
+      <div className="flex-1 overflow-y-auto px-4 py-10 space-y-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:scrollbar-width:thin">
         {allMessages.length > 0 ? (
           allMessages.map((message) => (
             <div

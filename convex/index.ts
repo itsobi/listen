@@ -34,15 +34,28 @@ export const listenAgentWorkflow = workflow.define({
       releaseDate: args.releaseDate,
     });
 
-    // step 2: transcribe audio
-    const storageId = await step.runAction(
-      internal.workflowTools.transcribeAudioInternalAction,
+    const transcriptExists = await step.runQuery(
+      internal.workflowTools.checkIfTranscriptExists,
       {
-        userId: args.userId,
-        audioUrl: args.audioUrl,
         trackId: args.trackId,
       }
     );
+
+    // Step 2: Check if transcript exists, if not transcribe audio
+    let storageId: Id<'_storage'> | null | undefined;
+
+    if (transcriptExists) {
+      storageId = transcriptExists;
+    } else {
+      storageId = await step.runAction(
+        internal.workflowTools.transcribeAudioInternalAction,
+        {
+          userId: args.userId,
+          audioUrl: args.audioUrl,
+          trackId: args.trackId,
+        }
+      );
+    }
 
     if (!storageId) {
       await step.runMutation(internal.workflowTools.updateAgentStatus, {
