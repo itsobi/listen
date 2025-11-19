@@ -45,7 +45,25 @@ export function VerifyPodcastsDialog({
       if (preferences) {
         // Merge existing podcasts with new ones
         const existingPodcasts = preferences.podcasts || [];
-        const mergedPodcasts = [...existingPodcasts, ...podcasts];
+
+        // Filter out podcasts that already exist in preferences (by name)
+        const newPodcasts = podcasts.filter(
+          (podcast) =>
+            !existingPodcasts.some((existing) => existing.name === podcast.name)
+        );
+
+        // If no new podcasts to add after filtering, show message and return
+        if (newPodcasts.length === 0) {
+          toast.info('All podcasts are already in your preferences');
+          setShowDialog(false);
+          onSuccess();
+          setPodcasts([]);
+          setIsLoadingFormState(false);
+          setIsPending(false);
+          return;
+        }
+
+        const mergedPodcasts = [...existingPodcasts, ...newPodcasts];
 
         // Update preferences with merged podcasts
         const result = await updatePreferences({

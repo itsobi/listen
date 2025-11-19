@@ -29,14 +29,17 @@ export function ListenAgentCard({ agent }: { agent: AgentGenerated }) {
 
   return (
     <div className="space-y-4 border-b pb-4">
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         <img
           src={agent.episodeImageUrl}
           alt={agent.episodeTitle}
           className="h-16 w-16 object-cover rounded-sm"
         />
         <div>
-          <p className={cn('text-sm')}>{agent.episodeTitle}</p>
+          <p className="font-semibold">{agent.episodeTitle}</p>
+          <p className="text-sm text-muted-foreground line-clamp-4">
+            {agent.episodeDescription}
+          </p>
         </div>
       </div>
 

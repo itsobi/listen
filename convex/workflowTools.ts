@@ -201,7 +201,7 @@ export const kickoffWorkflow = mutation({
       }
     );
 
-    if (isAlreadyGenerated)
+    if (isAlreadyGenerated.isAlreadyGenerated)
       throw new Error('Listen Agent already generated for this episode');
 
     const userId = user.subject;

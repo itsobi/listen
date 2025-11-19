@@ -256,7 +256,7 @@ export function PreferencesForm() {
                     <InputGroup className="w-full">
                       <InputGroupInput
                         aria-invalid={fieldState.invalid}
-                        placeholder="The Obi One Podcast"
+                        placeholder="Podcast name"
                         value={currentPodcast}
                         onChange={(e) => setCurrentPodcast(e.target.value)}
                         onKeyDown={handleKeyDown}
