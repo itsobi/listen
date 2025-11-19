@@ -60,8 +60,8 @@ export function LandingPageView() {
         <div className="flex flex-col items-center justify-center max-w-4xl mx-auto px-4 mt-20">
           <AnimatedHeader />
           <p className="text-muted-foreground text-sm lg:text-lg text-center mt-4">
-            Your favorite podcasts, episode breakdowns, personalized insights, &
-            more. All in one place.
+            Your favorite podcasts, episode breakdowns, & more. All in one
+            place.
           </p>
 
           <Link href="/sign-up">
@@ -75,7 +75,7 @@ export function LandingPageView() {
           </Link>
 
           <CustomVideoPlayer
-            src="https://stream.mux.com/DS00Spx1CV902MCtPj5WknGlR102V5HFkDe/high.mp4"
+            src="/videos/landing-page-video.mp4"
             className="my-10 z-999"
           />
         </div>
