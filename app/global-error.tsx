@@ -27,7 +27,7 @@ export default function GlobalError({
             <EmptyMedia variant="icon">
               <IconAlertCircle />
             </EmptyMedia>
-            <EmptyTitle>Something went wrong!</EmptyTitle>
+            <EmptyTitle>App Error!</EmptyTitle>
             <EmptyDescription>
               {error instanceof Error ? error.message : 'Unknown error'}
             </EmptyDescription>

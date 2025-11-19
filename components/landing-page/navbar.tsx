@@ -4,7 +4,7 @@ import { ThemeToggle } from '../theme/theme-toggle';
 
 export function AppLogo() {
   return (
-    <Link href="/" className="italic font-thin tracking-wide text-primary">
+    <Link href="/" className="italic font-bold tracking-wide text-primary">
       Listen
     </Link>
   );

@@ -1,34 +1,17 @@
 'use client';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { ChevronDown } from 'lucide-react';
+
 import { api } from '@/convex/_generated/api';
 import { useQuery } from 'convex/react';
-import { cn } from '@/lib/utils';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  IconBrandAppleFilled,
-  IconBrandSpotifyFilled,
-  IconBrandYoutubeFilled,
-} from '@tabler/icons-react';
 
-const ProviderIconsMap = {
-  apple: <IconBrandAppleFilled className="size-4" />,
-  spotify: <IconBrandSpotifyFilled className="size-4" />,
-  youtube: <IconBrandYoutubeFilled className="size-4" />,
-};
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export function SidebarNavCollapsible() {
   const { open: sidebarIsOpen, isMobile, toggleSidebar } = useSidebar();
@@ -38,7 +21,6 @@ export function SidebarNavCollapsible() {
   const router = useRouter();
 
   const preferences = useQuery(api.preferences.getPreferences);
-  const videoPreferences = useQuery(api.videoPreferences.getVideoPreferences);
 
   const isRouteActive = (
     type: 'podcasts' | 'videos',
@@ -110,93 +92,6 @@ export function SidebarNavCollapsible() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-      </div>
-
-      {/* Videos */}
-
-      <div className="space-y-0">
-        {videoPreferences?.channels &&
-          videoPreferences?.channels.length > 0 && (
-            <SidebarGroup>
-              <SidebarGroupLabel className="text-sm">Videos</SidebarGroupLabel>
-
-              <SidebarGroupContent>
-                {videoPreferences.channels.map((item, index) => (
-                  <Collapsible
-                    key={index}
-                    className="group/collapsible"
-                    defaultOpen={videoPreferences.providers.some((p) =>
-                      isRouteActive('videos', item.name, p)
-                    )}
-                  >
-                    <SidebarGroup>
-                      <SidebarGroupLabel
-                        asChild
-                        className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      >
-                        <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="h-3 w-3 rounded-[4px]"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="truncate">
-                              {truncateName(item.name)}
-                            </span>
-                          </div>
-                          <ChevronDown className="transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
-                        </CollapsibleTrigger>
-                      </SidebarGroupLabel>
-                      <CollapsibleContent>
-                        <div className="ml-3 px-2 border-l">
-                          <SidebarGroupContent className="mt-2">
-                            <SidebarMenu>
-                              {videoPreferences.providers.map(
-                                (provider, index) => (
-                                  <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton
-                                      className={cn(
-                                        'capitalize',
-                                        isRouteActive(
-                                          'videos',
-                                          item.name,
-                                          provider
-                                        ) && 'dark:text-primary'
-                                      )}
-                                      isActive={isRouteActive(
-                                        'videos',
-                                        item.name,
-                                        provider
-                                      )}
-                                      onClick={() =>
-                                        handleRouteTo(
-                                          'videos',
-                                          item.name,
-                                          provider,
-                                          item.channelId
-                                        )
-                                      }
-                                    >
-                                      {
-                                        ProviderIconsMap[
-                                          provider as keyof typeof ProviderIconsMap
-                                        ]
-                                      }
-                                      {provider}
-                                    </SidebarMenuButton>
-                                  </SidebarMenuItem>
-                                )
-                              )}
-                            </SidebarMenu>
-                          </SidebarGroupContent>
-                        </div>
-                      </CollapsibleContent>
-                    </SidebarGroup>
-                  </Collapsible>
-                ))}
-              </SidebarGroupContent>
-            </SidebarGroup>
-          )}
       </div>
     </>
   );

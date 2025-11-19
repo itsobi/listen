@@ -87,7 +87,7 @@ export function SignUpForm({ verifying, setVerifying }: Props) {
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold tracking-wide">
           Welcome to{' '}
-          <span className="text-primary italic font-thin tracking-wide animate-pulse">
+          <span className="text-primary italic font-bold tracking-wide animate-pulse">
             Listen
           </span>
         </h1>

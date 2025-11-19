@@ -1,9 +1,5 @@
-import { PageHeading } from '@/components/global/page-heading';
+import { HomeView } from './_components/home-view';
 
 export default function HomePage() {
-  return (
-    <>
-      <PageHeading title="Home" />
-    </>
-  );
+  return <HomeView />;
 }

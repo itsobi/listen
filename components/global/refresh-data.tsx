@@ -12,9 +12,9 @@ export function RefreshData() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    refreshQueries();
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsRefreshing(false);
+    await refreshQueries().finally(() => {
+      setIsRefreshing(false);
+    });
     toast.success('Episodes refreshed', {
       position: 'bottom-right',
     });

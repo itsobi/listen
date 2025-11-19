@@ -18,8 +18,8 @@ function NotificationsEmpty() {
       <BellOff className="size-8 mb-2 text-zinc-400" />
       <p className="text-base font-semibold">You&rsquo;re all caught up!</p>
       <p className="text-xs mt-1 max-w-xs mx-auto">
-        We&rsquo;ll keep you posted when there&rsquo;s something new. Any
-        notifications you get will show up here.
+        We&rsquo;ll keep you posted when your listen agents are ready to chat
+        with!
       </p>
     </div>
   );

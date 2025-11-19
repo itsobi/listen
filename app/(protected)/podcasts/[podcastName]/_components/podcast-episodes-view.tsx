@@ -34,10 +34,6 @@ export function PodcastEpisodesView({
         ) : (
           <Podcast className="size-40 rounded-lg object-cover" />
         )}
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold">{podcastInfo?.name}</h3>
-          <p>{podcastInfo?.publisher}</p>
-        </div>
       </div>
 
       <div className="mt-10 flex flex-col gap-4">

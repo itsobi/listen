@@ -18,16 +18,3 @@ export const usePreferencesStore = create<PreferencesStore>((set) => ({
   setPodcasts: (podcasts) => set({ podcasts }),
   removeAllPodcasts: () => set({ podcasts: [] }),
 }));
-
-interface VideoPreferencesStore {
-  channels: YoutubeChannel[];
-  setChannels: (channels: YoutubeChannel[]) => void;
-  removeAllChannels: () => void;
-}
-export const useVideoPreferencesStore = create<VideoPreferencesStore>(
-  (set) => ({
-    channels: [],
-    setChannels: (channels) => set({ channels }),
-    removeAllChannels: () => set({ channels: [] }),
-  })
-);

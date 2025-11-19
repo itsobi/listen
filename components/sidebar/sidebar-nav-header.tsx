@@ -11,7 +11,7 @@ export function SidebarNavHeader() {
         <div className="flex items-center justify-between px-2 pb-0 pt-3">
           <Link
             href="/"
-            className="italic font-thin tracking-wide text-primary"
+            className="italic font-bold tracking-wide text-primary"
           >
             Listen
           </Link>

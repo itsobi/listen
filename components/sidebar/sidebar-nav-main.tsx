@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/sidebar';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Bot, HomeIcon, MonitorPlay, Podcast } from 'lucide-react';
+import { Bot, HomeIcon, Podcast } from 'lucide-react';
 
 const navMain = [
   {
@@ -29,12 +29,6 @@ const navMain = [
     title: 'Preferences',
     url: '/preferences',
     icon: Podcast,
-  },
-  {
-    id: 'video-preferences',
-    title: 'Video Preferences',
-    url: '/video-preferences',
-    icon: MonitorPlay,
   },
 ];
 

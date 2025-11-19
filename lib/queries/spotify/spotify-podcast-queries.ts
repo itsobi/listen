@@ -29,7 +29,7 @@ const getToken = async () => {
     if (!response.ok) {
       return {
         success: false,
-        message: 'Spotify token request failed. Please try again.',
+        message: 'Token request failed. Please try again.',
       };
     }
 
@@ -62,14 +62,14 @@ const getPodcastByName = async (podcastName: string) => {
     if (!response.ok) {
       return {
         success: false,
-        message: 'Spotify podcast request failed. Please try again.',
+        message: 'Podcasts request failed. Please try again.',
       };
     }
 
     const data = await response.json();
 
     if (!data.shows || data.shows.items.length === 0) {
-      return { success: false, message: 'Spotify podcast not found' };
+      return { success: false, message: 'Podcast not found' };
     }
 
     return {
@@ -82,7 +82,7 @@ const getPodcastByName = async (podcastName: string) => {
     console.error('Error getting podcast', error);
     return {
       success: false,
-      message: 'Spotify podcast request failed. Please try again.',
+      message: 'Podcast request failed. Please try again.',
     };
   }
 };
@@ -106,7 +106,7 @@ export const getSpotifyEpisodes = async (podcastName: string) => {
     if (!response.ok) {
       return {
         success: false,
-        message: 'Spotify episodes request failed. Please try again.',
+        message: 'Episodes request failed. Please try again.',
       };
     }
 
@@ -125,7 +125,7 @@ export const getSpotifyEpisodes = async (podcastName: string) => {
     console.error('Error getting episodes', error);
     return {
       success: false,
-      message: 'Spotify episodes request failed. Please try again.',
+      message: 'Episodes request failed. Please try again.',
     };
   }
 };

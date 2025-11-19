@@ -6,7 +6,6 @@ import { SidebarNavCollapsible } from '@/components/sidebar/sidebar-nav-collapsi
 import { SidebarNavFooter } from '@/components/sidebar/sidebar-nav-footer';
 import { SidebarNavHeader } from '@/components/sidebar/sidebar-nav-header';
 import { SidebarNavMain } from '@/components/sidebar/sidebar-nav-main';
-import { Suspense } from 'react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

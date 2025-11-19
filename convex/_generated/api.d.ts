@@ -11,12 +11,12 @@
 import type * as agentTranscripts from "../agentTranscripts.js";
 import type * as agentsGenerated from "../agentsGenerated.js";
 import type * as chats from "../chats.js";
+import type * as homeData from "../homeData.js";
 import type * as index from "../index.js";
 import type * as notifications from "../notifications.js";
 import type * as preferences from "../preferences.js";
 import type * as tools from "../tools.js";
 import type * as transcribeAudio from "../transcribeAudio.js";
-import type * as videoPreferences from "../videoPreferences.js";
 import type * as workflowTools from "../workflowTools.js";
 
 import type {
@@ -37,12 +37,12 @@ declare const fullApi: ApiFromModules<{
   agentTranscripts: typeof agentTranscripts;
   agentsGenerated: typeof agentsGenerated;
   chats: typeof chats;
+  homeData: typeof homeData;
   index: typeof index;
   notifications: typeof notifications;
   preferences: typeof preferences;
   tools: typeof tools;
   transcribeAudio: typeof transcribeAudio;
-  videoPreferences: typeof videoPreferences;
   workflowTools: typeof workflowTools;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

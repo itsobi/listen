@@ -21,7 +21,7 @@ const letterVariants = {
 
 export function AnimatedHeader() {
   return (
-    <h1 className="text-4xl lg:text-6xl font-semibold tracking-tighter flex flex-wrap">
+    <h1 className="text-4xl lg:text-6xl tracking-tighter flex flex-wrap">
       {text.split('').map((char, i) => (
         <motion.span
           key={i}
@@ -35,7 +35,7 @@ export function AnimatedHeader() {
       ))}
       &nbsp;
       <motion.span
-        className="italic font-thin tracking-wide text-primary animate-pulse"
+        className="italic font-bold tracking-wide text-primary animate-pulse"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: text.length * 0.05 + 0.3 }}
@@ -48,7 +48,7 @@ export function AnimatedHeader() {
 
 export function LandingPageView() {
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Spotlight />
       <Navbar />
 
