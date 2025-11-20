@@ -21,7 +21,7 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.5);
   const [showControls, setShowControls] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
 
@@ -103,7 +103,12 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
         ref={videoRef}
         className={cn('w-full', !isVideoReady && 'hidden')}
         onTimeUpdate={handleTimeUpdate}
-        onLoadedData={() => setIsVideoReady(true)}
+        onLoadedData={() => {
+          setIsVideoReady(true);
+          if (videoRef.current) {
+            videoRef.current.playbackRate = 1.5;
+          }
+        }}
         src={src}
         onClick={togglePlay}
       />
