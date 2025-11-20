@@ -10,10 +10,12 @@ import {
 
 import { api } from '@/convex/_generated/api';
 import { useQuery } from 'convex/react';
+import { Loader } from 'lucide-react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export function SidebarNavCollapsible() {
+function Content() {
   const { open: sidebarIsOpen, isMobile, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -94,5 +96,13 @@ export function SidebarNavCollapsible() {
         )}
       </div>
     </>
+  );
+}
+
+export function SidebarNavCollapsible() {
+  return (
+    <Suspense fallback={<Loader className="size-4 animate-spin" />}>
+      <Content />
+    </Suspense>
   );
 }
