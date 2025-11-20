@@ -5,6 +5,7 @@ import { CustomVideoPlayer } from '@/components/landing-page/custom-video-player
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Spotlight } from '../ui/spotlight-new';
+import { SignInButton } from '@clerk/nextjs';
 
 const text = 'Welcome to';
 
@@ -64,7 +65,7 @@ export function LandingPageView() {
             place.
           </p>
 
-          <Link href="/sign-up">
+          <SignInButton mode="modal">
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.1 }}
@@ -72,7 +73,7 @@ export function LandingPageView() {
             >
               Get Started
             </motion.button>
-          </Link>
+          </SignInButton>
 
           <CustomVideoPlayer
             src="/videos/landing-page-video.mp4"
