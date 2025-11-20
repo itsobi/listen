@@ -18,13 +18,6 @@ export function Navbar() {
       <AppLogo />
 
       <div className="flex items-center gap-4">
-        <Link
-          href="/sign-in"
-          className="text-sm font-medium hover:text-primary"
-        >
-          Login
-        </Link>
-
         <ThemeToggle />
       </div>
     </nav>
