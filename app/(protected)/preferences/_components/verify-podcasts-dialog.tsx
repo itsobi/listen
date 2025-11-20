@@ -1,0 +1,157 @@
+'use client';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { api } from '@/convex/_generated/api';
+import { usePreferencesStore } from '@/lib/store';
+import { useMutation, useQuery } from 'convex/react';
+import { Loader } from 'lucide-react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { toast } from 'sonner';
+
+interface Props {
+  showDialog: boolean;
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
+  setIsLoadingFormState: Dispatch<SetStateAction<boolean>>;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+export function VerifyPodcastsDialog({
+  showDialog,
+  setShowDialog,
+  setIsLoadingFormState, // loading state for save button
+  onSuccess,
+  onCancel,
+}: Props) {
+  const [isPending, setIsPending] = useState(false);
+  const { podcasts, setPodcasts } = usePreferencesStore();
+  const preferences = useQuery(api.preferences.getPreferences);
+  const createPreference = useMutation(api.preferences.createPreference);
+  const updatePreferences = useMutation(api.preferences.updatePreferences);
+
+  const handleSave = async () => {
+    setIsPending(true);
+    try {
+      // Check if preferences exist to determine create vs update
+      if (preferences) {
+        // Merge existing podcasts with new ones
+        const existingPodcasts = preferences.podcasts || [];
+
+        // Filter out podcasts that already exist in preferences (by name)
+        const newPodcasts = podcasts.filter(
+          (podcast) =>
+            !existingPodcasts.some((existing) => existing.name === podcast.name)
+        );
+
+        // If no new podcasts to add after filtering, show message and return
+        if (newPodcasts.length === 0) {
+          toast.info('All podcasts are already in your preferences');
+          setShowDialog(false);
+          onSuccess();
+          setPodcasts([]);
+          setIsLoadingFormState(false);
+          setIsPending(false);
+          return;
+        }
+
+        const mergedPodcasts = [...existingPodcasts, ...newPodcasts];
+
+        // Update preferences with merged podcasts
+        const result = await updatePreferences({
+          preferenceId: preferences._id,
+          podcasts: mergedPodcasts,
+        });
+
+        if (result.success) {
+          toast.success(result.message);
+          setShowDialog(false);
+          // Clear the store after successful save
+          onSuccess();
+          setPodcasts([]);
+        } else {
+          toast.error(result.message || 'Failed to update preferences');
+          setIsPending(false);
+          return;
+        }
+      } else {
+        // Create new preferences (no existing podcasts to merge)
+        const result = await createPreference({
+          podcasts,
+        });
+
+        if (result.success) {
+          toast.success(result.message);
+          setShowDialog(false);
+          onSuccess();
+          // Clear the store after successful save
+          setPodcasts([]);
+        } else {
+          toast.error(result.message || 'Failed to create preferences');
+          setIsPending(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      toast.error('Failed to save preferences');
+    } finally {
+      setIsLoadingFormState(false);
+      setIsPending(false);
+    }
+  };
+
+  return (
+    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Verify New Podcasts</AlertDialogTitle>
+          <AlertDialogDescription>
+            If these are the podcasts you would like to track, click
+            &apos;Save&apos;. If you would like to add more podcasts, click
+            &apos;Cancel&apos; and add them to the form.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto">
+          {podcasts.map((podcast, index) => (
+            <div
+              key={`${podcast.name}-${index}`}
+              className="flex items-center gap-3 p-3 rounded-lg border"
+            >
+              {podcast.image && (
+                <img
+                  src={podcast.image}
+                  alt={podcast.name}
+                  className="size-12 rounded-lg object-cover"
+                />
+              )}
+              <div>
+                <p className="font-semibold">
+                  {index + 1}. {podcast.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {podcast.creatorName}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleSave} disabled={isPending}>
+            {isPending ? <Loader className="size-4 animate-spin" /> : 'Save'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
