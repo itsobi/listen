@@ -4,7 +4,6 @@ import { LoadingScreen } from '@/components/global/loading-screen';
 import { ListenAgentCard } from '@/components/listen-agent/listen-agent-card';
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyTitle,
   EmptyMedia,
