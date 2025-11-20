@@ -93,8 +93,17 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
       onMouseLeave={() => setShowControls(false)}
     >
       {!isVideoReady && (
-        <div className="w-full aspect-video flex items-center justify-center">
-          <Skeleton className="w-full h-full" />
+        <div
+          className="w-full aspect-video flex items-center justify-center cursor-pointer relative"
+          onClick={togglePlay}
+        >
+          <Skeleton className="w-full h-full absolute" />
+          <div className="relative z-10 flex flex-col items-center gap-3 text-white px-4 text-center">
+            <Play className="h-12 w-12 opacity-80" />
+            <p className="text-sm md:text-base font-medium">
+              Click to watch video
+            </p>
+          </div>
         </div>
       )}
 
@@ -109,7 +118,7 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
           }
         }}
         preload="metadata"
-        poster="/images/poster-image.png"
+        playsInline
         src={src}
         onClick={togglePlay}
       />
