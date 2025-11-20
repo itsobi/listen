@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CustomSlider } from '@/components/landing-page/slider';
@@ -109,6 +108,7 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
             videoRef.current.playbackRate = 1.5;
           }
         }}
+        preload="metadata"
         src={src}
         onClick={togglePlay}
       />
