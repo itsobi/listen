@@ -109,6 +109,7 @@ export function CustomVideoPlayer({ src, className }: CustomVideoPlayerProps) {
           }
         }}
         preload="metadata"
+        poster="/images/poster-image.png"
         src={src}
         onClick={togglePlay}
       />
