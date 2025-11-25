@@ -1,7 +1,6 @@
 'use client';
 
 import { Navbar } from '@/components/landing-page/navbar';
-import { CustomVideoPlayer } from '@/components/landing-page/custom-video-player';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Spotlight } from '../ui/spotlight-new';
@@ -75,9 +74,19 @@ export function LandingPageView() {
             </motion.button>
           </SignInButton>
 
-          <CustomVideoPlayer
+          <video
             src="/videos/landing-page-video.mp4"
-            className="my-10 z-999"
+            autoPlay
+            muted
+            playsInline
+            loop
+            controls
+            className="my-10 rounded-xl shadow-lg max-w-full w-full"
+            ref={(el) => {
+              if (el) {
+                el.playbackRate = 1.5;
+              }
+            }}
           />
         </div>
       </motion.div>
